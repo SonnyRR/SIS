@@ -18,5 +18,6 @@
     <Folder Include="Headers\" />
     <Folder Include="Requests\" />
     <Folder Include="Responses\" />
+    <Folder Include="Headers\Contracts\" />
   </ItemGroup>
 </Project>
