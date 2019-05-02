@@ -1,9 +1,9 @@
-﻿using System.ComponentModel;
-using System.Reflection;
-using SIS.HTTP.Enums;
-
-namespace SIS.HTTP.Extensions
+﻿namespace SIS.HTTP.Extensions
 {
+    using System.ComponentModel;
+    using System.Reflection;
+    using SIS.HTTP.Enums;
+
     public static class HttpResponseStatusExtensions
     {
         public static string GetResponseLine(this HttpResponseStatusCode value)

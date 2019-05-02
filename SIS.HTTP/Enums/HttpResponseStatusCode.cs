@@ -1,7 +1,7 @@
-﻿using System.ComponentModel;
-
-namespace SIS.HTTP.Enums
+﻿namespace SIS.HTTP.Enums
 {
+    using System.ComponentModel;
+
     public enum HttpResponseStatusCode
     {
         [Description("OK")]
