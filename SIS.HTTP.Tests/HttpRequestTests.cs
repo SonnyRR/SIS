@@ -1,11 +1,13 @@
 namespace SIS.HTTP.Tests
 {
     using System;
-    using Xunit;
+    using NUnit.Framework;
+
+    using SIS.HTTP.Requests;
 
     public class HttpRequestTests
     {
-        [Fact]
+        [Test]
         public void Test1()
         {
 
