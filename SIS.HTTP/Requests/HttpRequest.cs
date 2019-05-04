@@ -15,6 +15,8 @@
             this.FormData = new Dictionary<string, object>();
             this.QueryData = new Dictionary<string, object>();
             this.Headers = new HttpHeaderCollection();
+
+            this.ParseRequest(requestAsString);
         }
 
         public string Path { get; private set; }
@@ -32,13 +34,16 @@
         private void ParseRequest(string requestString)
         {
             string[] request = requestString
-                .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                [0]
-                .Trim()
-                .Split();
+                .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
-            if (this.IsRequestLineValid(request))
+            string[] requestLine = request[0]
+                 .Trim()
+                 .Split();
+
+            if (this.IsRequestLineValid(requestLine))
                 throw new BadRequestException();
+
+            this.ParseRequestMethod(method: requestLine[0]);
 
         }
 
@@ -57,13 +62,25 @@
             if (!Enum.TryParse<HttpRequestMethod>(method, out _))
                 isValid = false;
 
+            // NOTE
+            // Maybe needed to change checking method.
             else if (!Uri.IsWellFormedUriString(route, UriKind.Absolute))
                 isValid = false;
 
             else if (protocol != "HTTP/1.1")
                 isValid = false;
-                
+
             return isValid;
+        }
+
+        private void ParseRequestMethod(string method)
+        {
+            this.RequestMethod = (HttpRequestMethod)Enum.Parse(typeof(HttpRequestMethod), method);
+        }
+
+        private void ParseRequestUrl(string path)
+        {
+            //path = path.Split("/");
         }
     }
 
