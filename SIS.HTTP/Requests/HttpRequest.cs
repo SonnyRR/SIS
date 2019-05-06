@@ -47,7 +47,9 @@
 
             this.ParseRequestMethod(method: requestLine[0]);
             this.ParseRequestUrl(url: requestLine[1]);
-            this.ParseRequestPath(url: requestLine[2]);
+            this.ParseRequestPath();
+            this.ParseHeaders(request);
+
 
         }
 
@@ -87,9 +89,9 @@
             this.Url = url;
         }
 
-        private void ParseRequestPath(string url)
+        private void ParseRequestPath()
         {
-            var urlSplitted = url
+            var urlSplitted = this.Url
                 .Split('/', StringSplitOptions.RemoveEmptyEntries)
                 .ToList();
 
@@ -99,7 +101,7 @@
         }
 
         private void ParseHeaders(ICollection<string> splittedRequest)
-        {
+        {            
             foreach (var headerPair in splittedRequest.Skip(1))
             {
                 if (headerPair == Environment.NewLine)
@@ -118,6 +120,51 @@
             if (this.Headers.ContainsHeader("Host"))
                 throw new BadRequestException();
         }
-    }
 
+        private bool IsRequestQueryStringValid(string queryString)
+        {
+            bool isValid = true;
+
+            if (string.IsNullOrWhiteSpace(queryString))
+                isValid = false;
+
+            var splittedQuery = queryString
+                .Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (splittedQuery.Length == 1)
+                isValid = false;
+
+            return isValid;
+        }
+
+        private void ParseQueryParameters()
+        {
+            var splittedUrlTokens = this.Url
+                .Split(new[] { '?' }, StringSplitOptions.RemoveEmptyEntries);
+            
+            if (splittedUrlTokens.Length > 1)
+            {
+                var queryString = splittedUrlTokens[1];
+
+                var isValid = IsRequestQueryStringValid(queryString);
+
+                if (!isValid)
+                    throw new BadRequestException();
+
+                var queryPairs = queryString
+                    .Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var pair in queryPairs)
+                {
+                    var pairSplitted = pair.Split("=", StringSplitOptions.RemoveEmptyEntries);
+
+                    var key = pairSplitted[0];
+                    var value = pairSplitted[1];
+
+                    if (!this.QueryData.ContainsKey(key))
+                        this.QueryData[key] = value;
+                }
+            }
+        }
+    }
 }
