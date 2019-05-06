@@ -7,7 +7,7 @@
         /// <summary>
         /// Capitalize the specified string.
         /// </summary>
-        /// <returns>The capitalized string.</returns>
+        /// <returns>The capitalized <see cref="System.String"/> value.</returns>
         /// <param name="string">String.</param>
         public static string Capitalize(this string @string)
         {

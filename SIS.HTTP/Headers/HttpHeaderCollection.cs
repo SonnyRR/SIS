@@ -52,7 +52,7 @@
         /// <summary>
         /// Appends headers into a single string with correct formatting.
         /// </summary>
-        /// <returns>A formated <see cref="T:System.String"/> of inner headers.</returns>
+        /// <returns>A formated <see cref="System.String"/> of inner headers.</returns>
         public override string ToString()
         {
             StringBuilder builder = new StringBuilder();
