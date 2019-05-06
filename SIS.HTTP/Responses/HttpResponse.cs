@@ -40,9 +40,9 @@
         }
 
         /// <summary>
-        /// Forms the full response in byte[] in order to be send to the client.
+        /// Forms the full response in <see cref="System.Byte"/>[] in order to be send to the client.
         /// </summary>
-        /// <returns>The full response as <see cref="System.Byte[]"/>.</returns>
+        /// <returns>The full response as <see cref="System.Byte"/>[].</returns>
         public byte[] GetBytes()
         {
             var responseLineAsBytes = Encoding.UTF32.GetBytes(this.ToString());
@@ -54,7 +54,7 @@
 
         /// <summary>
         /// Forms the Response line. It holds the protocol, the status code and the status, and the Response Headers along with the CRLF line.
-        /// These properties are concatenated in a string and returned.
+        /// These properties are concatenated in a <see cref="System.String"/> and returned.
         /// </summary>
         /// <returns>A <see cref="System.String"/> that represents the response line with its concatenated properties.</returns>
         public override string ToString()
@@ -65,6 +65,7 @@
             builder.AppendLine(this.Headers.ToString());
             builder.Append(Environment.NewLine);
 
+            this.GetBytes();
             return builder.ToString();
         }
     }
