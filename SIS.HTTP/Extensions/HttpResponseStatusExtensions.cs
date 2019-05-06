@@ -6,11 +6,17 @@
 
     public static class HttpResponseStatusExtensions
     {
-        public static string GetResponseLine(this HttpResponseStatusCode value)
+        /// <summary>
+        /// Gets the response line if the current status code.
+        /// </summary>
+        /// <returns>The response line.</returns>
+        /// <example>400 => 400 Bad Request</example>
+        /// <param name="statusCode">HTTP Status code.</param>
+        public static string GetResponseLine(this HttpResponseStatusCode statusCode)
         {
-            FieldInfo fieldInfo = value
+            FieldInfo fieldInfo = statusCode
                 .GetType()
-                .GetField(value.ToString());
+                .GetField(statusCode.ToString());
 
             var attributes = (DescriptionAttribute[])fieldInfo
                 .GetCustomAttributes(typeof(DescriptionAttribute), false);
@@ -18,7 +24,7 @@
             if (attributes.Length > 0)
                 return attributes[0].Description;
 
-            return value.ToString();
+            return statusCode.ToString();
         }
     }
 }

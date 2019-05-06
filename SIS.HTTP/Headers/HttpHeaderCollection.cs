@@ -16,6 +16,10 @@
             this.headers = new Dictionary<string, HttpHeader>();
         }
 
+        /// <summary>
+        /// Wrapper for IDictionary, it adds the header as a value and its name as a key.
+        /// </summary>
+        /// <param name="header">Header.</param>
         public void Add(HttpHeader header)
         {
             // FIXME
@@ -23,11 +27,21 @@
             this.headers.Add(header.Key, header);
         }
 
+        /// <summary>
+        /// Wrapper for IDictonary, it checks if a header with a given name is already present.
+        /// </summary>
+        /// <returns><c>true</c>, if header is present, <c>false</c> otherwise.</returns>
+        /// <param name="key">Key.</param>
         public bool ContainsHeader(string key)
         {
             return this.headers.ContainsKey(key);
         }
 
+        /// <summary>
+        /// Wrapper for IDictionary.
+        /// </summary>
+        /// <returns>The header or null if not present.</returns>
+        /// <param name="key">Key.</param>
         public HttpHeader GetHeader(string key)
         {
             return this.headers
@@ -35,6 +49,10 @@
                 .Value;
         }
 
+        /// <summary>
+        /// Appends headers into a single string with correct formatting.
+        /// </summary>
+        /// <returns>A formated <see cref="T:System.String"/> of inner headers.</returns>
         public override string ToString()
         {
             StringBuilder builder = new StringBuilder();
