@@ -56,6 +56,9 @@
             this.ParseRequestPath();
             this.ParseHeaders(request);
 
+            string formParamsAsString = request[request.Length - 1];
+            this.ParseRequestParameters(formParamsAsString);
+
         }
 
         /// <summary>
@@ -231,6 +234,16 @@
                         this.FormData[key] = value;
                 }
             }
+        }
+
+        /// <summary>
+        /// Wrapper method to parse query and form data parameters.
+        /// </summary>
+        /// <param name="formData">Form data.</param>
+        private void ParseRequestParameters(string formData)
+        {
+            this.ParseQueryParameters();
+            this.ParseFormDataParameters(formData);
         }
     }
 }
