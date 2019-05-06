@@ -45,11 +45,10 @@
             if (this.IsRequestLineValid(requestLine))
                 throw new BadRequestException();
 
-            this.ParseRequestMethod(method: requestLine[0]);
-            this.ParseRequestUrl(url: requestLine[1]);
+            this.ParseRequestMethod(requestLine);
+            this.ParseRequestUrl(requestLine);
             this.ParseRequestPath();
             this.ParseHeaders(request);
-
 
         }
 
@@ -79,14 +78,15 @@
             return isValid;
         }
 
-        private void ParseRequestMethod(string method)
+        private void ParseRequestMethod(string[] requestLine)
         {
+            var method = requestLine[0];
             this.RequestMethod = (HttpRequestMethod)Enum.Parse(typeof(HttpRequestMethod), method);
         }
 
-        private void ParseRequestUrl(string url)
+        private void ParseRequestUrl(string[] requestLine)
         {
-            this.Url = url;
+            this.Url = requestLine[1];
         }
 
         private void ParseRequestPath()
@@ -156,14 +156,32 @@
 
                 foreach (var pair in queryPairs)
                 {
-                    var pairSplitted = pair.Split("=", StringSplitOptions.RemoveEmptyEntries);
+                    var pairTokens = pair.Split("=", StringSplitOptions.RemoveEmptyEntries);
 
-                    var key = pairSplitted[0];
-                    var value = pairSplitted[1];
+                    var key = pairTokens[0];
+                    var value = pairTokens[1];
 
                     if (!this.QueryData.ContainsKey(key))
                         this.QueryData[key] = value;
                 }
+            }
+        }
+
+        private void ParseFormDataParameters(string formData)
+        {
+            var dataPairs = formData
+                .Split("&", StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var pair in dataPairs)
+            {
+                var pairTokens = pair
+                    .Split("=", StringSplitOptions.RemoveEmptyEntries);
+
+                var key = pairTokens[0];
+                var value = pairTokens[1];
+
+                if (!this.FormData.ContainsKey(key))
+                    this.FormData[key] = value;
             }
         }
     }
