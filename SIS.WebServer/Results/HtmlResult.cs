@@ -9,7 +9,7 @@
     public class HtmlResult : HttpResponse
     {
         public HtmlResult(string content, HttpResponseStatusCode statusCode)
-            :base(statusCode)
+            : base(statusCode)
         {
             this.Headers.Add(new HttpHeader("Content-Type", "text/html"));
             this.Content = Encoding.UTF8.GetBytes(content);
