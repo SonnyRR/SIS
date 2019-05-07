@@ -79,7 +79,7 @@
             var method = CultureInfo
                 .InvariantCulture
                 .TextInfo
-                .ToTitleCase(requestLineArgs[0]); 
+                .ToTitleCase(requestLineArgs[0]);
 
             var route = requestLineArgs[1];
             var protocol = requestLineArgs[2];
@@ -127,13 +127,22 @@
         /// </summary>
         private void ParseRequestPath()
         {
+            // FIXME
+            // Find a better way to parse the path from the url string.
             var urlSplitted = this.Url
                 .Split('/', StringSplitOptions.RemoveEmptyEntries)
                 .ToList();
 
-            urlSplitted.RemoveAt(0);
+            if (urlSplitted.Count > 0)
+            {
+                urlSplitted.RemoveAt(0);
+                this.Path = $"/{string.Join("/", urlSplitted).TrimEnd('/')}";
+            }
 
-            this.Path = string.Join("", urlSplitted);
+            else
+            {
+                this.Path = "/";
+            }
         }
 
         /// <summary>
@@ -144,7 +153,7 @@
         /// <param name="splittedRequest">Splitted request.</param>
         /// <exception cref="BadRequestException">Throws a BadRequestException if there is no “Host” Header present after the parsing.</exception>
         private void ParseHeaders(ICollection<string> splittedRequest)
-        {            
+        {
             foreach (var headerPair in splittedRequest.Skip(1))
             {
                 if (headerPair == Environment.NewLine)
@@ -152,15 +161,20 @@
 
                 var kvp = headerPair.Split(": ", StringSplitOptions.RemoveEmptyEntries);
 
+                // NB: When it reaches a CRLF line we break the parsing loop.
+                if (kvp.Length == 1)
+                    break;
+
                 // TODO
                 // CHECK
                 // Invalid data may be passed, check for invalid kvp's.
-                var currentHeader = new HttpHeader(kvp[0], kvp[1]);
+                var currentHeader = 
+                    new HttpHeader(kvp[0], kvp[1].Replace(Environment.NewLine, string.Empty));
 
                 this.Headers.Add(currentHeader);
             }
 
-            if (this.Headers.ContainsHeader("Host"))
+            if (this.Headers.ContainsHeader("Host") == false)
                 throw new BadRequestException();
         }
 
@@ -195,7 +209,7 @@
         {
             var splittedUrlTokens = this.Url
                 .Split(new[] { '?' }, StringSplitOptions.RemoveEmptyEntries);
-            
+
             if (splittedUrlTokens.Length > 1)
             {
                 var queryString = splittedUrlTokens[1];
