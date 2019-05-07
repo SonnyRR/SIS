@@ -68,7 +68,6 @@
             builder.AppendLine(this.Headers.ToString());
             builder.Append(Environment.NewLine);
 
-            this.GetBytes();
             return builder.ToString();
         }
     }
