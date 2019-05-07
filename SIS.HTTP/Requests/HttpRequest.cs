@@ -48,6 +48,10 @@
                  .Trim()
                  .Split();
 
+            // .ToLower() fixes the all upper case behaviour caused by TextInfo.ToTitleCase():
+            // https://docs.microsoft.com/en-us/dotnet/api/system.globalization.textinfo.totitlecase?view=netframework-4.8#examples
+            requestLine[0] = requestLine[0].ToLower();
+
             if (this.IsRequestLineValid(requestLine))
                 throw new BadRequestException();
 
@@ -70,15 +74,18 @@
         {
             bool isValid = true;
 
+            // FIXME this does not make the request method to title case.
+            // Ex: GET -> Get
             var method = CultureInfo
                 .InvariantCulture
                 .TextInfo
-                .ToTitleCase(requestLineArgs[0]);
+                .ToTitleCase(requestLineArgs[0]); 
 
             var route = requestLineArgs[1];
             var protocol = requestLineArgs[2];
 
-            if (!Enum.TryParse<HttpRequestMethod>(method, out _))
+            var canRequestEnumBeParsed = Enum.TryParse<HttpRequestMethod>(method, out _);
+            if (!canRequestEnumBeParsed)
                 isValid = false;
 
             // NOTE
@@ -98,7 +105,11 @@
         /// <param name="requestLine">Request line (splitted as an array).</param>
         private void ParseRequestMethod(string[] requestLine)
         {
-            var method = requestLine[0];
+            var method = CultureInfo
+                .InvariantCulture
+                .TextInfo
+                .ToTitleCase(requestLine[0]);
+
             this.RequestMethod = (HttpRequestMethod)Enum.Parse(typeof(HttpRequestMethod), method);
         }
 
