@@ -4,7 +4,7 @@
     using System.Net.Sockets;
     using System.Text;
     using System.Threading.Tasks;
-
+    using SIS.HTTP.Enums;
     using SIS.HTTP.Requests;
     using SIS.HTTP.Requests.Contracts;
     using SIS.HTTP.Responses;
@@ -37,11 +37,11 @@
         {
 
             // FIXME
-            // StackOverFlow exception
+            // StackOverFlow exception when returning a new HttpResponse();
             if (this.routingTable.Routes.ContainsKey(request.RequestMethod) == false
                 || this.routingTable.Routes[request.RequestMethod].ContainsKey(request.Path) == false)
             {
-                return new HttpResponse(HTTP.Enums.HttpResponseStatusCode.NotFound);
+                return new HttpResponse(HttpResponseStatusCode.NotFound);
             }
 
             return this.routingTable.Routes[request.RequestMethod][request.Path].Invoke(request);

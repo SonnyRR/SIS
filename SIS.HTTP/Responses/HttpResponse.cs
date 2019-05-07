@@ -21,6 +21,9 @@
         {
             this.Headers = new HttpHeaderCollection();
             this.Content = null;
+
+            // FIXME
+            // This causes StackOverFlowException when param value is assigned to property.
             this.StatusCode = statusCode;
         }
 
