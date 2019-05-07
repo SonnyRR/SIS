@@ -42,6 +42,8 @@
             {
                 var client = await this.listener.AcceptSocketAsync();
                 var connectionHandler = new ConnectionHandler(client, this.routingTable);
+                var responseTask = connectionHandler.ProcessRequestAsync();
+                responseTask.Wait();
             }
         }
 
