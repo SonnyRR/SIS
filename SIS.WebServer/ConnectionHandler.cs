@@ -35,6 +35,9 @@
 
         private IHttpResponse HandleRequest(IHttpRequest request)
         {
+
+            // FIXME
+            // StackOverFlow exception
             if (this.routingTable.Routes.ContainsKey(request.RequestMethod) == false
                 || this.routingTable.Routes[request.RequestMethod].ContainsKey(request.Path) == false)
             {

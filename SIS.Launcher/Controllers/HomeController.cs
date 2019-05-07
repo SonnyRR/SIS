@@ -1,5 +1,6 @@
 ﻿namespace SIS.Launcher.Controllers
 {
+    using SIS.HTTP.Enums;
     using SIS.HTTP.Responses.Contracts;
     using SIS.WebServer.Results;
 
@@ -9,7 +10,7 @@
         {
             var content = "<h1>Hello, world!</h1>";
 
-            return new HtmlResult(content, HTTP.Enums.HttpResponseStatusCode.Ok);
+            return new HtmlResult(content, HttpResponseStatusCode.Ok);
         }
     }
 }
