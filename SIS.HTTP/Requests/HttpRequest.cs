@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Web;
 
     using SIS.HTTP.Enums;
     using SIS.HTTP.Exceptions;
@@ -119,7 +120,7 @@
         /// <param name="requestLine">Request line (splitted as an array).</param>
         private void ParseRequestUrl(string[] requestLine)
         {
-            this.Url = requestLine[1];
+            this.Url = HttpUtility.UrlDecode(requestLine[1]);
         }
 
         /// <summary>
