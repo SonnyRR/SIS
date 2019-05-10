@@ -64,7 +64,7 @@
         {
             StringBuilder builder = new StringBuilder();
 
-            builder.AppendLine($"{GlobalConstants.HttpOneProtocolFragment} {this.StatusCode.GetResponseLine()}");
+            builder.AppendLine($"{GlobalConstants.HttpOneProtocolFragment} {this.StatusCode.GetResponseLine()}{Environment.NewLine}");
             builder.AppendLine(this.Headers.ToString());
             builder.Append(Environment.NewLine);
 
