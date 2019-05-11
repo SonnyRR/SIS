@@ -129,7 +129,7 @@
         private void ParseRequestPath()
         {
             // FIXME
-            // Find a better way to parse the path from the url string.
+            // Find a better way to parse the path from the url string.            
             var urlSplitted = this.Url
                 .Split('/', StringSplitOptions.RemoveEmptyEntries)
                 .ToList();
@@ -210,6 +210,8 @@
         /// <exception cref="BadRequestException">Throws a BadRequestException if the Query string is invalid.</exception>
         private void ParseQueryParameters()
         {
+            // It's better to use HttpUtility.ParseQueryString() but the point is to write these methods by hand.
+
             var splittedUrlTokens = this.Url
                 .Split(new[] { '?' }, StringSplitOptions.RemoveEmptyEntries);
 
