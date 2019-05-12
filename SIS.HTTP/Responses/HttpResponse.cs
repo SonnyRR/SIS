@@ -48,7 +48,11 @@
         /// <returns>The full response as <see cref="System.Byte"/>[].</returns>
         public byte[] GetBytes()
         {
-            var responseLineAsBytes = Encoding.UTF32.GetBytes(this.ToString());
+            var responseLineAsString = this.ToString();
+
+            // NB: Use consistent encodings when converting to byte[]
+            // as there is difference when encoding/decoding from bytes.
+            var responseLineAsBytes = Encoding.UTF8.GetBytes(responseLineAsString);
 
             return responseLineAsBytes
                 .Concat(this.Content)
@@ -64,7 +68,7 @@
         {
             StringBuilder builder = new StringBuilder();
 
-            builder.AppendLine($"{GlobalConstants.HttpOneProtocolFragment} {this.StatusCode.GetResponseLine()}{Environment.NewLine}");
+            builder.AppendLine($"{GlobalConstants.HttpOneProtocolFragment} {this.StatusCode.GetResponseLine()}");
             builder.AppendLine(this.Headers.ToString());
             builder.Append(Environment.NewLine);
 
