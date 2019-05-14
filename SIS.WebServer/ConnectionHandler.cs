@@ -49,6 +49,7 @@
         {
             byte[] segments = response.GetBytes();
             await this.client.SendAsync(segments, SocketFlags.None);
+            this.client.Shutdown(SocketShutdown.Both);
         }
 
         private async Task<IHttpRequest> ReadRequest()

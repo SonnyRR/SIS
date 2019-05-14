@@ -68,9 +68,9 @@
         {
             StringBuilder builder = new StringBuilder();
 
-            builder.AppendLine($"{GlobalConstants.HttpOneProtocolFragment} {this.StatusCode.GetResponseLine()}");
-            builder.AppendLine(this.Headers.ToString());
-            builder.Append(Environment.NewLine);
+            builder.Append($"{GlobalConstants.HttpOneProtocolFragment} {this.StatusCode.GetResponseLine()}{GlobalConstants.HttpNewLine}");
+            builder.Append($"{this.Headers.ToString()}{GlobalConstants.HttpNewLine}");
+            builder.Append(GlobalConstants.HttpNewLine);
 
             return builder.ToString();
         }
