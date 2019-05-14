@@ -47,7 +47,7 @@
             CoreValidator.ThrowIfNullOrEmpty(requestString, nameof(requestString));
 
             string[] request = requestString
-                .Split(new[] { GlobalConstants.HttpNewLine }, StringSplitOptions.RemoveEmptyEntries);
+                .Split(new[] { GlobalConstants.HttpNewLine }, StringSplitOptions.None);
 
             string[] requestLine = request[0]
                  .Trim()
@@ -163,14 +163,14 @@
         {
             foreach (var headerPair in splittedRequest.Skip(1))
             {
-                if (headerPair == GlobalConstants.HttpNewLine)
+                // NB: When it reaches a CRLF line we break the parsing loop.
+                if (headerPair == string.Empty)
                     break;
 
                 var kvp = headerPair.Split(": ", StringSplitOptions.RemoveEmptyEntries);
 
-                // NB: When it reaches a CRLF line we break the parsing loop.
-                if (kvp.Length == 1)
-                    break;
+                //if (kvp.Length == 1)
+                //    break;
 
                 // TODO
                 // CHECK
