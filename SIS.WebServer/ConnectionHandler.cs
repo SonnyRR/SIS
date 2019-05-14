@@ -4,6 +4,7 @@
     using System.Net.Sockets;
     using System.Text;
     using System.Threading.Tasks;
+
     using SIS.HTTP.Enums;
     using SIS.HTTP.Exceptions;
     using SIS.HTTP.Requests;
@@ -57,6 +58,7 @@
             {
                 IHttpRequest request = await this.ReadRequest();
 
+                //FIXME               
                 if (request == null)
                     this.client.Shutdown(SocketShutdown.Both);
 

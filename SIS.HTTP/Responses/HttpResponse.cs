@@ -22,8 +22,6 @@
             this.Headers = new HttpHeaderCollection();
             this.Content = null;
 
-            // FIXME
-            // This causes StackOverFlowException when param value is assigned to property.
             this.StatusCode = statusCode;
         }
 
@@ -55,7 +53,7 @@
             var responseLineAsBytes = Encoding.UTF8.GetBytes(responseLineAsString);
 
             return responseLineAsBytes
-                .Concat(this.Content)
+                .Concat(this.Content ?? Enumerable.Empty<byte>())
                 .ToArray();
         }
 
