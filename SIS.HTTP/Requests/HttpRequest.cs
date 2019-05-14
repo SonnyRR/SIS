@@ -5,7 +5,7 @@
     using System.Globalization;
     using System.Linq;
     using System.Web;
-
+    using SIS.HTTP.Common;
     using SIS.HTTP.Enums;
     using SIS.HTTP.Exceptions;
     using SIS.HTTP.Headers;
@@ -15,6 +15,8 @@
     {
         public HttpRequest(string requestAsString)
         {
+            CoreValidator.ThrowIfNullOrEmpty(requestAsString, nameof(requestAsString));
+
             this.FormData = new Dictionary<string, object>();
             this.QueryData = new Dictionary<string, object>();
             this.Headers = new HttpHeaderCollection();
@@ -42,8 +44,10 @@
         /// <param name="requestString">Request string.</param>
         private void ParseRequest(string requestString)
         {
+            CoreValidator.ThrowIfNullOrEmpty(requestString, nameof(requestString));
+
             string[] request = requestString
-                .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                .Split(new[] { GlobalConstants.HttpNewLine }, StringSplitOptions.RemoveEmptyEntries);
 
             string[] requestLine = request[0]
                  .Trim()
@@ -159,7 +163,7 @@
         {
             foreach (var headerPair in splittedRequest.Skip(1))
             {
-                if (headerPair == Environment.NewLine)
+                if (headerPair == GlobalConstants.HttpNewLine)
                     break;
 
                 var kvp = headerPair.Split(": ", StringSplitOptions.RemoveEmptyEntries);
@@ -172,7 +176,7 @@
                 // CHECK
                 // Invalid data may be passed, check for invalid kvp's.
                 var currentHeader = 
-                    new HttpHeader(kvp[0], kvp[1].Replace(Environment.NewLine, string.Empty));
+                    new HttpHeader(kvp[0], kvp[1].Replace(GlobalConstants.HttpNewLine, string.Empty));
 
                 this.Headers.Add(currentHeader);
             }
