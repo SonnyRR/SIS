@@ -5,10 +5,12 @@
     using System.Text;
     using System.Threading.Tasks;
     using SIS.HTTP.Enums;
+    using SIS.HTTP.Exceptions;
     using SIS.HTTP.Requests;
     using SIS.HTTP.Requests.Contracts;
     using SIS.HTTP.Responses;
     using SIS.HTTP.Responses.Contracts;
+    using SIS.WebServer.Results;
     using SIS.WebServer.Routing;
 
     internal class ConnectionHandler
@@ -20,36 +22,6 @@
         {
             this.client = client;
             this.routingTable = routingTable;
-        }
-
-        public async Task ProcessRequestAsync()
-        {
-            IHttpRequest request = await this.ReadRequest();
-
-            if (request == null)
-                this.client.Shutdown(SocketShutdown.Both);
-
-            IHttpResponse response = this.HandleRequest(request);
-            await this.PrepareResponse(response);
-        }
-
-        private IHttpResponse HandleRequest(IHttpRequest request)
-        {
-
-            if (this.routingTable.Routes.ContainsKey(request.RequestMethod) == false
-                || this.routingTable.Routes[request.RequestMethod].ContainsKey(request.Path) == false)
-            {
-                return new HttpResponse(HttpResponseStatusCode.NotFound);
-            }
-
-            return this.routingTable.Routes[request.RequestMethod][request.Path].Invoke(request);
-        }
-
-        private async Task PrepareResponse(IHttpResponse response)
-        {
-            byte[] segments = response.GetBytes();
-            await this.client.SendAsync(segments, SocketFlags.None);
-            this.client.Shutdown(SocketShutdown.Both);
         }
 
         private async Task<IHttpRequest> ReadRequest()
@@ -78,5 +50,52 @@
             return new HttpRequest(builder.ToString());
 
         }
+
+        public async Task ProcessRequestAsync()
+        {
+            try
+            {
+                IHttpRequest request = await this.ReadRequest();
+
+                if (request == null)
+                    this.client.Shutdown(SocketShutdown.Both);
+
+                Console.WriteLine($"Processing: {request.RequestMethod} {request.Path}");
+
+                IHttpResponse response = this.HandleRequest(request);
+                await this.PrepareResponse(response);
+            }
+
+            catch (BadRequestException ex)
+            {
+                this.PrepareResponse(new TextResult(ex.ToString(), HttpResponseStatusCode.BadRequest));
+            }
+
+            catch (Exception ex)
+            {
+                this.PrepareResponse(new TextResult(ex.ToString(), HttpResponseStatusCode.InternalServerError));                   
+            }
+
+        }
+
+        private IHttpResponse HandleRequest(IHttpRequest request)
+        {
+
+            if (this.routingTable.Routes.ContainsKey(request.RequestMethod) == false
+                || this.routingTable.Routes[request.RequestMethod].ContainsKey(request.Path) == false)
+            {
+                return new HttpResponse(HttpResponseStatusCode.NotFound);
+            }
+
+            return this.routingTable.Routes[request.RequestMethod][request.Path].Invoke(request);
+        }
+
+        private async Task PrepareResponse(IHttpResponse response)
+        {
+            byte[] segments = response.GetBytes();
+            await this.client.SendAsync(segments, SocketFlags.None);
+            this.client.Shutdown(SocketShutdown.Both);
+        }
+
     }
 }
