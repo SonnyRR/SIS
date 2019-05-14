@@ -68,12 +68,12 @@
 
             catch (BadRequestException ex)
             {
-                this.PrepareResponse(new TextResult(ex.ToString(), HttpResponseStatusCode.BadRequest));
+                await this.PrepareResponse(new TextResult(ex.ToString(), HttpResponseStatusCode.BadRequest));
             }
 
             catch (Exception ex)
             {
-                this.PrepareResponse(new TextResult(ex.ToString(), HttpResponseStatusCode.InternalServerError));                   
+                await this.PrepareResponse(new TextResult(ex.ToString(), HttpResponseStatusCode.InternalServerError));                   
             }
 
         }
