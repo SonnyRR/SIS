@@ -6,6 +6,7 @@
 
     using SIS.HTTP.Headers.Contracts;
     using System.Text;
+    using SIS.HTTP.Common;
 
     public class HttpHeaderCollection : IHttpHeaderCollection
     {
@@ -59,7 +60,7 @@
 
             foreach (var kvp in this.headers)
             {
-                builder.AppendLine(kvp.Value.ToString());
+                builder.Append($"{kvp.Value.ToString()}{GlobalConstants.HttpNewLine}");
             }
 
             return builder.ToString().TrimEnd();

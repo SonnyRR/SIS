@@ -5,6 +5,7 @@
     using System.Globalization;
     using System.Linq;
     using System.Web;
+
     using SIS.HTTP.Common;
     using SIS.HTTP.Enums;
     using SIS.HTTP.Exceptions;
@@ -79,29 +80,12 @@
         {
             bool isValid = true;
 
-            // FIXME this does not make the request method to title case.
-            // Ex: GET -> Get
-            var method = requestLineArgs[0];
-                //CultureInfo
-                //.InvariantCulture
-                //.TextInfo
-                //.ToTitleCase(requestLineArgs[0]);
-
-            var route = requestLineArgs[1];
-            var protocol = requestLineArgs[2];
-
-            var canRequestEnumBeParsed = Enum.TryParse<HttpRequestMethod>(method, ignoreCase: true, out _);
-
-            if (!canRequestEnumBeParsed)
+            if (requestLineArgs.Length != 3
+                || !Uri.IsWellFormedUriString(requestLineArgs[1], UriKind.Absolute) 
+                || requestLineArgs[2] != GlobalConstants.HttpOneProtocolFragment)
+            {
                 isValid = false;
-
-            // NOTE
-            // Maybe needed to change checking method.
-            else if (!Uri.IsWellFormedUriString(route, UriKind.Absolute))
-                isValid = false;
-
-            else if (protocol != "HTTP/1.1")
-                isValid = false;
+            }
 
             return isValid;
         }
@@ -109,15 +93,21 @@
         /// <summary>
         /// Sets the Request’s Method, by parsing the 1st element from the split requestLine
         /// </summary>
-        /// <param name="requestLine">Request line (splitted as an array).</param>
-        private void ParseRequestMethod(string[] requestLine)
+        /// <param name="requestLineArgs">Request line (splitted as an array).</param>
+        private void ParseRequestMethod(string[] requestLineArgs)
         {
-            var method = CultureInfo
-                .InvariantCulture
-                .TextInfo
-                .ToTitleCase(requestLine[0]);
+            var methodAsString = requestLineArgs[0];
 
-            this.RequestMethod = (HttpRequestMethod)Enum.Parse(typeof(HttpRequestMethod), method, ignoreCase: true);
+            HttpRequestMethod method;
+            bool isMethodParsedSuccessfuly = Enum.TryParse(methodAsString, ignoreCase: true, out method);
+
+            if (!isMethodParsedSuccessfuly)
+            {
+                throw new BadRequestException(string.Format(GlobalConstants.UnsupportedHttpMethodExceptionMessage, methodAsString));
+            }
+
+            this.RequestMethod = method;
+
         }
 
         /// <summary>
@@ -126,7 +116,8 @@
         /// <param name="requestLine">Request line (splitted as an array).</param>
         private void ParseRequestUrl(string[] requestLine)
         {
-            this.Url = HttpUtility.UrlDecode(requestLine[1]);
+            var urlAsString = requestLine[1];
+            this.Url = HttpUtility.UrlDecode(urlAsString);
         }
 
         /// <summary>
@@ -171,13 +162,10 @@
 
                 var kvp = headerPair.Split(": ", StringSplitOptions.RemoveEmptyEntries);
 
-                //if (kvp.Length == 1)
-                //    break;
-
                 // TODO
                 // CHECK
                 // Invalid data may be passed, check for invalid kvp's.
-                var currentHeader = 
+                var currentHeader =
                     new HttpHeader(kvp[0], kvp[1].Replace(GlobalConstants.HttpNewLine, string.Empty));
 
                 this.Headers.Add(currentHeader);
@@ -253,22 +241,21 @@
         /// <param name="formData">Form data.</param>
         private void ParseFormDataParameters(string formData)
         {
-            if (!string.IsNullOrWhiteSpace(formData))
+            CoreValidator.ThrowIfNullOrEmpty(formData, nameof(formData));
+
+            var dataPairs = formData
+                .Split("&", StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var pair in dataPairs)
             {
-                var dataPairs = formData
-                    .Split("&", StringSplitOptions.RemoveEmptyEntries);
+                var pairTokens = pair
+                    .Split("=", StringSplitOptions.RemoveEmptyEntries);
 
-                foreach (var pair in dataPairs)
-                {
-                    var pairTokens = pair
-                        .Split("=", StringSplitOptions.RemoveEmptyEntries);
+                var key = pairTokens[0];
+                var value = pairTokens[1];
 
-                    var key = pairTokens[0];
-                    var value = pairTokens[1];
-
-                    if (!this.FormData.ContainsKey(key))
-                        this.FormData[key] = value;
-                }
+                if (!this.FormData.ContainsKey(key))
+                    this.FormData[key] = value;
             }
         }
 
