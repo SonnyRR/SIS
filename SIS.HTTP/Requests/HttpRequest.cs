@@ -55,7 +55,7 @@
 
             // .ToLower() fixes the all upper case behaviour caused by TextInfo.ToTitleCase():
             // https://docs.microsoft.com/en-us/dotnet/api/system.globalization.textinfo.totitlecase?view=netframework-4.8#examples
-            requestLine[0] = requestLine[0].ToLower();
+            //requestLine[0] = requestLine[0].ToLower();
 
             if (this.IsRequestLineValid(requestLine))
                 throw new BadRequestException();
@@ -117,7 +117,7 @@
                 .TextInfo
                 .ToTitleCase(requestLine[0]);
 
-            this.RequestMethod = (HttpRequestMethod)Enum.Parse(typeof(HttpRequestMethod), method);
+            this.RequestMethod = (HttpRequestMethod)Enum.Parse(typeof(HttpRequestMethod), method, ignoreCase: true);
         }
 
         /// <summary>
