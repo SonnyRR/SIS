@@ -46,10 +46,10 @@
         {
             CoreValidator.ThrowIfNullOrEmpty(requestString, nameof(requestString));
 
-            string[] request = requestString
+            string[] wholeRequest = requestString
                 .Split(new[] { GlobalConstants.HttpNewLine }, StringSplitOptions.None);
 
-            string[] requestLine = request[0]
+            string[] requestLine = wholeRequest[0]
                  .Trim()
                  .Split();
 
@@ -63,9 +63,9 @@
             this.ParseRequestMethod(requestLine);
             this.ParseRequestUrl(requestLine);
             this.ParseRequestPath();
-            this.ParseHeaders(request);
+            this.ParseHeaders(wholeRequest);
 
-            string formParamsAsString = request[request.Length - 1];
+            string formParamsAsString = wholeRequest[wholeRequest.Length - 1];
             this.ParseRequestParameters(formParamsAsString);
 
         }
@@ -81,15 +81,17 @@
 
             // FIXME this does not make the request method to title case.
             // Ex: GET -> Get
-            var method = CultureInfo
-                .InvariantCulture
-                .TextInfo
-                .ToTitleCase(requestLineArgs[0]);
+            var method = requestLineArgs[0];
+                //CultureInfo
+                //.InvariantCulture
+                //.TextInfo
+                //.ToTitleCase(requestLineArgs[0]);
 
             var route = requestLineArgs[1];
             var protocol = requestLineArgs[2];
 
-            var canRequestEnumBeParsed = Enum.TryParse<HttpRequestMethod>(method, out _);
+            var canRequestEnumBeParsed = Enum.TryParse<HttpRequestMethod>(method, ignoreCase: true, out _);
+
             if (!canRequestEnumBeParsed)
                 isValid = false;
 
