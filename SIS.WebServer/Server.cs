@@ -4,6 +4,7 @@
     using System.Net;
     using System.Net.Sockets;
     using System.Threading.Tasks;
+
     using SIS.WebServer.Routing;
 
     public class Server
@@ -40,6 +41,7 @@
         {
             while (this.isRunning)
             {
+                Console.WriteLine("Waiting for client request...");
                 using (var client = await this.listener.AcceptSocketAsync())
                 {
                     var connectionHandler = new ConnectionHandler(client, this.routingTable);

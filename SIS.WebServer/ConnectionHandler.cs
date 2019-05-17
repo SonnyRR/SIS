@@ -5,6 +5,7 @@
     using System.Text;
     using System.Threading.Tasks;
 
+    using SIS.HTTP.Common;
     using SIS.HTTP.Enums;
     using SIS.HTTP.Exceptions;
     using SIS.HTTP.Requests;
@@ -21,6 +22,9 @@
 
         public ConnectionHandler(Socket client, ServerRoutingTable routingTable)
         {
+            CoreValidator.ThrowIfNull(client, nameof(client));
+            CoreValidator.ThrowIfNull(routingTable, nameof(routingTable));
+
             this.client = client;
             this.routingTable = routingTable;
         }
@@ -62,7 +66,7 @@
                 if (request == null)
                     this.client.Shutdown(SocketShutdown.Both);
 
-                Console.WriteLine($"Processing: {request.RequestMethod} {request.Path}");
+                Console.WriteLine($"Processing: [Method: {request.RequestMethod}; Path: {request.Path}]");
 
                 IHttpResponse response = this.HandleRequest(request);
                 await this.PrepareResponse(response);
@@ -83,13 +87,12 @@
         private IHttpResponse HandleRequest(IHttpRequest request)
         {
 
-            if (this.routingTable.Routes.ContainsKey(request.RequestMethod) == false
-                || this.routingTable.Routes[request.RequestMethod].ContainsKey(request.Path) == false)
+            if (!this.routingTable.Contains(request.RequestMethod, request.Path))
             {
                 return new HttpResponse(HttpResponseStatusCode.NotFound);
             }
 
-            return this.routingTable.Routes[request.RequestMethod][request.Path].Invoke(request);
+            return this.routingTable.Get(request.RequestMethod, request.Path).Invoke(request);
         }
 
         private async Task PrepareResponse(IHttpResponse response)

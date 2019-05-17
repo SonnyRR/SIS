@@ -18,7 +18,7 @@
         public HttpResponse(HttpResponseStatusCode statusCode)
         {
             this.Headers = new HttpHeaderCollection();
-            this.Content = null;
+            this.Content = new byte[0];
 
             this.StatusCode = statusCode;
         }

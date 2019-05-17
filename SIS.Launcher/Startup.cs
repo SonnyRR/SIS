@@ -12,7 +12,7 @@
         {
             ServerRoutingTable routingTable = new ServerRoutingTable();
                 
-            routingTable.Routes[HttpRequestMethod.Get]["/"] = req => new HomeController().Index();
+            routingTable.Add(HttpRequestMethod.Get, "/", x => new HomeController().Index());
 
             Server server = new Server(8040, routingTable);
             server.Run();

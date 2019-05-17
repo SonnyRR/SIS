@@ -68,7 +68,6 @@
 
             string formParamsAsString = wholeRequest[wholeRequest.Length - 1];
             this.ParseRequestParameters(formParamsAsString);
-
         }
 
         /// <summary>
@@ -262,7 +261,9 @@
         private void ParseRequestParameters(string formData)
         {
             this.ParseQueryParameters();
-            this.ParseFormDataParameters(formData);
+
+            if (formData != string.Empty)
+                this.ParseFormDataParameters(formData);
         }
     }
 }
