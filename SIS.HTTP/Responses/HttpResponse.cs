@@ -1,6 +1,5 @@
 ﻿namespace SIS.HTTP.Responses
 {
-    using System.Linq;
     using System.Text;
 
     using SIS.HTTP.Common;

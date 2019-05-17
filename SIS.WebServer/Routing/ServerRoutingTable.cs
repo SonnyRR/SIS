@@ -2,16 +2,19 @@
 {
     using System;
     using System.Collections.Generic;
-
+    using SIS.HTTP.Common;
     using SIS.HTTP.Enums;
     using SIS.HTTP.Requests.Contracts;
     using SIS.HTTP.Responses.Contracts;
+    using SIS.WebServer.Routing.Contracts;
 
-    public class ServerRoutingTable
+    public class ServerRoutingTable : IServerRoutingTable
     {
+        public readonly Dictionary<HttpRequestMethod, Dictionary<string, Func<IHttpRequest, IHttpResponse>>> routes;
+
         public ServerRoutingTable()
         {
-            this.Routes = new Dictionary<HttpRequestMethod, Dictionary<string, Func<IHttpRequest, IHttpResponse>>>
+            this.routes = new Dictionary<HttpRequestMethod, Dictionary<string, Func<IHttpRequest, IHttpResponse>>>
             {
                 // This is basically the main algorithm for Request Handling. 
                 // A Request Handler is configured by setting the Request Method and the Path of the Request. 
@@ -25,6 +28,32 @@
             };
         }
 
-        public Dictionary<HttpRequestMethod, Dictionary<string, Func<IHttpRequest, IHttpResponse>>> Routes { get; }
+
+        public void Add(HttpRequestMethod method, string path, Func<IHttpRequest, IHttpResponse> @delegate)
+        {
+            CoreValidator.ThrowIfNull(method, nameof(method));
+            CoreValidator.ThrowIfNullOrEmpty(path, nameof(path));
+            CoreValidator.ThrowIfNull(@delegate, nameof(@delegate));
+
+            // CHECK may throw exception
+            this.routes[method][path] = @delegate;
+        }
+
+        public bool Contains(HttpRequestMethod method, string path)
+        {
+            CoreValidator.ThrowIfNull(method, nameof(method));
+            CoreValidator.ThrowIfNullOrEmpty(path, nameof(path));
+
+            return this.routes.ContainsKey(method) 
+                && this.routes[method].ContainsKey(path);
+        }
+
+        public Func<IHttpRequest, IHttpResponse> Get(HttpRequestMethod method, string path)
+        {
+            CoreValidator.ThrowIfNull(method, nameof(method));
+            CoreValidator.ThrowIfNullOrEmpty(path, nameof(path));
+
+            return this.routes[method][path];
+        }
     }
 }

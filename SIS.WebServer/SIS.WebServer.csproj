@@ -12,7 +12,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Results\" />
-    <Folder Include="Routing\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIS.HTTP\SIS.HTTP.csproj" />
