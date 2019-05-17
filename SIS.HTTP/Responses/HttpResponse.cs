@@ -1,6 +1,5 @@
 ﻿namespace SIS.HTTP.Responses
 {
-    using System;
     using System.Linq;
     using System.Text;
 
@@ -58,7 +57,8 @@
         }
 
         /// <summary>
-        /// Forms the Response line. It holds the protocol, the status code and the status, and the Response Headers along with the CRLF line.
+        /// Forms the Response line. It holds the protocol, the status code and the status
+        /// and the Response Headers along with the CRLF line.
         /// These properties are concatenated in a <see cref="System.String"/> and returned.
         /// </summary>
         /// <returns>A <see cref="System.String"/> that represents the response line with its concatenated properties.</returns>

@@ -107,7 +107,6 @@
             }
 
             this.RequestMethod = method;
-
         }
 
         /// <summary>
@@ -162,9 +161,6 @@
 
                 var kvp = headerPair.Split(": ", StringSplitOptions.RemoveEmptyEntries);
 
-                // TODO
-                // CHECK
-                // Invalid data may be passed, check for invalid kvp's.
                 var currentHeader =
                     new HttpHeader(kvp[0], kvp[1].Replace(GlobalConstants.HttpNewLine, string.Empty));
 
