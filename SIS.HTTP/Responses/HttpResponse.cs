@@ -50,10 +50,19 @@
             // NB: Use consistent encodings when converting to byte[]
             // as there is difference when encoding/decoding from bytes.
             var responseLineAsBytes = Encoding.UTF8.GetBytes(responseLineAsString);
+            var response = new byte[responseLineAsBytes.Length + this.Content.Length];
 
-            return responseLineAsBytes
-                .Concat(this.Content ?? Enumerable.Empty<byte>())
-                .ToArray();
+            for (int index = 0; index < responseLineAsBytes.Length; index++)
+            {
+                response[index] = responseLineAsBytes[index];
+            }
+
+            for (int index = 0; index < this.Content.Length; index++)
+            {
+                response[index + responseLineAsBytes.Length] = this.Content[index];
+            }
+
+            return response;
         }
 
         /// <summary>
