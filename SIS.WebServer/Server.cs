@@ -3,6 +3,7 @@
     using System;
     using System.Net;
     using System.Net.Sockets;
+    using System.Runtime.InteropServices;
     using System.Threading.Tasks;
 
     using SIS.WebServer.Routing;
@@ -31,22 +32,22 @@
             this.listener.Start();
             this.isRunning = true;
 
-            Console.WriteLine($"SIS Server is running on: {LocalhostIpAddress}:{this.port} | {Environment.OSVersion}");
+            Console.WriteLine($"SIS Server is running on: {LocalhostIpAddress}:{this.port}{Environment.NewLine}" +
+                $"OS: {RuntimeInformation.OSDescription}{Environment.NewLine}");
 
-            var task = Task.Run(this.ListenLoop);
+            var task = Task.Run(this.Listen);
             task.Wait();
         }
 
-        public async Task ListenLoop()
+        public async Task Listen()
         {
             while (this.isRunning)
             {
                 Console.WriteLine("Waiting for client request...");
-                using (var client = await this.listener.AcceptSocketAsync())
+                using (var client = this.listener.AcceptSocketAsync().GetAwaiter().GetResult())
                 {
                     var connectionHandler = new ConnectionHandler(client, this.routingTable);
-                    var responseTask = connectionHandler.ProcessRequestAsync();
-                    responseTask.Wait();
+                    await connectionHandler.ProcessRequestAsync();                    
                 }
             }
         }
