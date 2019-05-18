@@ -62,14 +62,13 @@
             {
                 IHttpRequest request = await this.ReadRequest();
 
-                //FIXME               
-                if (request == null)
-                    this.client.Shutdown(SocketShutdown.Both);
+                if (request != null)                    
+                {
+                    Console.WriteLine($"Processing: [Method: {request.RequestMethod} | Path: {request.Path}]{Environment.NewLine}");
 
-                Console.WriteLine($"Processing: [Method: {request.RequestMethod}; Path: {request.Path}]");
-
-                IHttpResponse response = this.HandleRequest(request);
-                await this.PrepareResponse(response);
+                    IHttpResponse response = this.HandleRequest(request);
+                    await this.PrepareResponse(response);
+                }
             }
 
             catch (BadRequestException ex)
@@ -81,6 +80,8 @@
             {
                 await this.PrepareResponse(new TextResult(ex.ToString(), HttpResponseStatusCode.InternalServerError));                   
             }
+
+            this.client.Shutdown(SocketShutdown.Both);
 
         }
 
@@ -99,7 +100,6 @@
         {
             byte[] segments = response.GetBytes();
             await this.client.SendAsync(segments, SocketFlags.None);
-            this.client.Shutdown(SocketShutdown.Both);
         }
 
     }
