@@ -163,7 +163,7 @@
                 var currentHeader =
                     new HttpHeader(kvp[0], kvp[1].Replace(GlobalConstants.HttpNewLine, string.Empty));
 
-                this.Headers.Add(currentHeader);
+                this.Headers.AddHeader(currentHeader);
             }
 
             if (this.Headers.ContainsHeader("Host") == false)

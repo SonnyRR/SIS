@@ -87,7 +87,6 @@
 
         private IHttpResponse HandleRequest(IHttpRequest request)
         {
-
             if (!this.routingTable.Contains(request.RequestMethod, request.Path))
             {
                 return new HttpResponse(HttpResponseStatusCode.NotFound);
@@ -101,6 +100,5 @@
             byte[] segments = response.GetBytes();
             await this.client.SendAsync(segments, SocketFlags.None);
         }
-
     }
 }

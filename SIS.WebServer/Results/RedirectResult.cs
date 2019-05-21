@@ -9,7 +9,7 @@
         public RedirectResult(string location)
             : base(HttpResponseStatusCode.SeeOther)
         {
-            this.Headers.Add(new HttpHeader("Location", location));
+            this.Headers.AddHeader(new HttpHeader("Location", location));
         }
     }
 }

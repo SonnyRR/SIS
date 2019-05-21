@@ -35,7 +35,7 @@
         /// <param name="header">Header.</param>
         public void AddHeader(HttpHeader header)
         {
-            this.Headers.Add(header);
+            this.Headers.AddHeader(header);
         }
 
         /// <summary>

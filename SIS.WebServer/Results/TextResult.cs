@@ -12,7 +12,7 @@
             , string contentType = "text/plain; charset=utf8")
             : base(statusCode)
         {
-            this.Headers.Add(new HttpHeader("Content-Type", contentType));
+            this.Headers.AddHeader(new HttpHeader("Content-Type", contentType));
             this.Content = Encoding.UTF8.GetBytes(content);
         }
 
@@ -20,7 +20,7 @@
             , string contentType = "text/plain; charset=utf8")
             : base(statusCode)
         {
-            this.Headers.Add(new HttpHeader("Content-Type", contentType));
+            this.Headers.AddHeader(new HttpHeader("Content-Type", contentType));
             this.Content = content;
         }
     }
