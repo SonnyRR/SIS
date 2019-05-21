@@ -7,6 +7,8 @@
     using System.Web;
 
     using SIS.HTTP.Common;
+    using SIS.HTTP.Cookies;
+    using SIS.HTTP.Cookies.Contracts;
     using SIS.HTTP.Enums;
     using SIS.HTTP.Exceptions;
     using SIS.HTTP.Headers;
@@ -21,6 +23,7 @@
             this.FormData = new Dictionary<string, object>();
             this.QueryData = new Dictionary<string, object>();
             this.Headers = new HttpHeaderCollection();
+            this.Cookies = new HttpCookieCollection();
 
             this.ParseRequest(requestAsString);
         }
@@ -36,6 +39,8 @@
         public HttpHeaderCollection Headers { get; }
 
         public HttpRequestMethod RequestMethod { get; private set; }
+
+        public IHttpCookieCollection Cookies { get; }
 
 
         /// <summary>
@@ -65,6 +70,7 @@
             this.ParseRequestUrl(requestLine);
             this.ParseRequestPath();
             this.ParseHeaders(wholeRequest);
+            this.ParseCookies();
 
             string formParamsAsString = wholeRequest[wholeRequest.Length - 1];
             this.ParseRequestParameters(formParamsAsString);
@@ -168,6 +174,32 @@
 
             if (this.Headers.ContainsHeader("Host") == false)
                 throw new BadRequestException();
+        }
+
+        /// <summary>
+        /// Checks the HttpHeadersCollection for a Header with name “Cookie”.
+        /// If there is a match, extracts its string value, formats it, parses it and adds it to the HttpCookieCollection.
+        /// </summary>
+        private void ParseRequestCookies()
+        {
+            if (this.Headers.ContainsHeader(GlobalConstants.CookieHeaderName))
+            {
+                var cookiesValues = this.Headers
+                    .GetHeader(GlobalConstants.CookieHeaderName)
+                    .Value
+                    .Split("; ", StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var cookieAsAString in cookiesValues)
+                {
+                    var cookieSplitted = cookieAsAString.Split('=', StringSplitOptions.RemoveEmptyEntries);
+
+                    var cookieKey = cookieSplitted[0];
+                    var cookieVal = cookieSplitted[1];
+
+                    HttpCookie cookie = new HttpCookie(cookieKey, cookieVal);
+                    this.Cookies.AddCookie(cookie);
+                }
+            }
         }
 
         /// <summary>
