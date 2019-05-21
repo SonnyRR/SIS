@@ -21,7 +21,7 @@
         /// Wrapper for IDictionary, it adds the header as a value and its name as a key.
         /// </summary>
         /// <param name="header">Header.</param>
-        public void Add(HttpHeader header)
+        public void AddHeader(HttpHeader header)
         {
             // FIXME
             // Probably should check for duplicate keys.
