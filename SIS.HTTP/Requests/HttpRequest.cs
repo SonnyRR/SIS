@@ -70,7 +70,7 @@
             this.ParseRequestUrl(requestLine);
             this.ParseRequestPath();
             this.ParseHeaders(wholeRequest);
-            this.ParseCookies();
+            //this.ParseCookies();
 
             string formParamsAsString = wholeRequest[wholeRequest.Length - 1];
             this.ParseRequestParameters(formParamsAsString);
