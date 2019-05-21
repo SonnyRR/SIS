@@ -6,6 +6,8 @@
   -->
 
 # SIS - SoftUni Information Services (May 2019)
+[![Build status](https://ci.appveyor.com/api/projects/status/8r6mqlpvr78e447n?svg=true)](https://ci.appveyor.com/project/SonnyRR/sis)
+
 📌 SoftUni Information Services. IIS-inspired web server for educational purposes only.
 
 📢 SIS is a combination of a Web Server and a MVC Framework. Ultimately it is designed to mimic Microsoft’s IIS and ASP.NET Core. 
