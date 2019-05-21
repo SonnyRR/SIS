@@ -9,7 +9,10 @@
     <ProjectReference Include="..\SIS.WebServer\SIS.WebServer.csproj" />
     <ProjectReference Include="..\SIS.HTTP\SIS.HTTP.csproj" />
   </ItemGroup>
+
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <None Update="Views\Home\Home.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

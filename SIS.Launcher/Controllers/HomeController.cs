@@ -1,16 +1,13 @@
-﻿namespace SIS.Launcher.Controllers
+﻿using SIS.HTTP.Requests.Contracts;
+using SIS.HTTP.Responses.Contracts;
+
+namespace SIS.Launcher.Controllers
 {
-    using SIS.HTTP.Enums;
-    using SIS.HTTP.Responses.Contracts;
-    using SIS.WebServer.Results;
-
-    public class HomeController
+    public class HomeController : BaseController
     {
-        public IHttpResponse Index()
+        public IHttpResponse Home(IHttpRequest httpRequest)
         {
-            var content = "<h1>Hello, world!</h1>";
-
-            return new HtmlResult(content, HttpResponseStatusCode.Ok);
+            return this.View();
         }
     }
 }

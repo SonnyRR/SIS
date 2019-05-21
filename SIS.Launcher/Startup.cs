@@ -11,8 +11,9 @@
         static void Main(string[] args)
         {
             ServerRoutingTable routingTable = new ServerRoutingTable();
-                
-            routingTable.Add(HttpRequestMethod.Get, "/", x => new HomeController().Index());
+
+            routingTable.Add(HttpRequestMethod.Get, "/", httpRequest
+                => new HomeController().Home(httpRequest));
 
             Server server = new Server(8040, routingTable);
             server.Run();
