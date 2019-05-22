@@ -44,6 +44,7 @@
             while (this.isRunning)
             {
                 Console.WriteLine("Waiting for client request...");
+
                 using (var client = this.listener.AcceptSocketAsync().GetAwaiter().GetResult())
                 {
                     var connectionHandler = new ConnectionHandler(client, this.routingTable);
