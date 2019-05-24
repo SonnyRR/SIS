@@ -9,6 +9,7 @@
     public class HttpCookieCollection : IHttpCookieCollection
     {
         private Dictionary<string, HttpCookie> cookies;
+        private const string HttpCookieStringSeparator = "; ";
 
         public HttpCookieCollection()
         {
@@ -53,6 +54,11 @@
         {
             // FIXME
             return (IEnumerator)this.GetEnumerator();
+        }
+
+        public override string ToString()
+        {
+            return string.Join(HttpCookieStringSeparator, this.cookies.Values);
         }
     }
 }
