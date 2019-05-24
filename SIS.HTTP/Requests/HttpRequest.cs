@@ -137,10 +137,8 @@
                 .Split('/', StringSplitOptions.RemoveEmptyEntries)
                 .ToList();
 
-            if (urlSplitted.Count > 0 && urlSplitted[0] != "/")
-            {
-                if (urlSplitted.Count > 1)
-                    urlSplitted.RemoveAt(0);
+            if (urlSplitted.Count > 0)
+            {             
 
                 this.Path = $"/{string.Join("/", urlSplitted).TrimEnd('/')}";
             }

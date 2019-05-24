@@ -19,4 +19,8 @@
     <Folder Include="SIS.HTTP.Tests\" />
     <Folder Include="SIS.WebServer.Tests\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SIS.WebServer\SIS.WebServer.csproj" />
+    <ProjectReference Include="..\SIS.HTTP\SIS.HTTP.csproj" />
+  </ItemGroup>
 </Project>
