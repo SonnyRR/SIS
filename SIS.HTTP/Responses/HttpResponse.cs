@@ -3,6 +3,8 @@
     using System.Text;
 
     using SIS.HTTP.Common;
+    using SIS.HTTP.Cookies;
+    using SIS.HTTP.Cookies.Contracts;
     using SIS.HTTP.Enums;
     using SIS.HTTP.Extensions;
     using SIS.HTTP.Headers;
@@ -21,11 +23,14 @@
             this.Content = new byte[0];
 
             this.StatusCode = statusCode;
+            this.Cookies = new HttpCookieCollection();
         }
 
         public HttpResponseStatusCode StatusCode { get; set; }
 
         public IHttpHeaderCollection Headers { get; private set; }
+
+        public IHttpCookieCollection Cookies { get; private set; }
 
         public byte[] Content { get; set; }
 
@@ -77,6 +82,11 @@
             builder.Append($"{GlobalConstants.HttpOneProtocolFragment} {this.StatusCode.GetResponseLine()}{GlobalConstants.HttpNewLine}");
             builder.Append($"{this.Headers.ToString()}{GlobalConstants.HttpNewLine}");
             builder.Append(GlobalConstants.HttpNewLine);
+
+            if (this.Cookies.HasCookies())
+            {
+                builder.Append($"Set-Cookie: {this.Cookies}{GlobalConstants.HttpNewLine}");
+            }
 
             return builder.ToString();
         }
