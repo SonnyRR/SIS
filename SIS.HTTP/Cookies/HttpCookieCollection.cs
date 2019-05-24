@@ -20,7 +20,7 @@
         {
             CoreValidator.ThrowIfNull(cookie, nameof(cookie));
 
-            this.cookies[cookie.Key] = cookie;
+            this.cookies.Add(cookie.Key, cookie);
         }
 
         public bool ContainsCookie(string key)

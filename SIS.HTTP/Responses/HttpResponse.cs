@@ -34,6 +34,11 @@
 
         public byte[] Content { get; set; }
 
+        public void AddCookie(HttpCookie cookie)
+        {
+            this.Cookies.AddCookie(cookie);
+        }
+
         /// <summary>
         /// Adds the header to the request.
         /// </summary>
