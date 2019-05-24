@@ -8,7 +8,7 @@
 
         bool ContainsParameter(string name);
 
-        void AddParameter(string name, object parameter)'
+        void AddParameter(string name, object parameter);
 
         void ClearParameters();
     }
