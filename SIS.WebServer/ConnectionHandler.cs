@@ -66,7 +66,7 @@
 
                 if (request != null)
                 {
-                    Console.WriteLine($"Processing: [Method: {request.RequestMethod} | Path: {request.Path}]{Environment.NewLine}");
+                    Console.WriteLine($@"Processing: [Method: ""{request.RequestMethod}"" | Path: ""{request.Path}""{Environment.NewLine}");
 
                     var sessionId = this.SetRequestSession(request);
                     IHttpResponse response = this.HandleRequest(request);
