@@ -15,15 +15,15 @@
     {
         public HttpResponse()
         {
+            this.Headers = new HttpHeaderCollection();
+            this.Content = new byte[0];
+            this.Cookies = new HttpCookieCollection();
         }
 
         public HttpResponse(HttpResponseStatusCode statusCode)
+            :this()
         {
-            this.Headers = new HttpHeaderCollection();
-            this.Content = new byte[0];
-
             this.StatusCode = statusCode;
-            this.Cookies = new HttpCookieCollection();
         }
 
         public HttpResponseStatusCode StatusCode { get; set; }
@@ -36,6 +36,8 @@
 
         public void AddCookie(HttpCookie cookie)
         {
+            CoreValidator.ThrowIfNull(cookie, nameof(cookie));
+
             this.Cookies.AddCookie(cookie);
         }
 
@@ -45,6 +47,8 @@
         /// <param name="header">Header.</param>
         public void AddHeader(HttpHeader header)
         {
+            CoreValidator.ThrowIfNull(header, nameof(header));
+
             this.Headers.AddHeader(header);
         }
 
