@@ -13,6 +13,7 @@
     using SIS.HTTP.Exceptions;
     using SIS.HTTP.Headers;
     using SIS.HTTP.Requests.Contracts;
+    using SIS.HTTP.Sessions.Contracts;
 
     public class HttpRequest : IHttpRequest
     {
@@ -41,6 +42,7 @@
         public HttpRequestMethod RequestMethod { get; private set; }
 
         public IHttpCookieCollection Cookies { get; }
+        public IHttpSession Session { get; set; }
 
 
         /// <summary>

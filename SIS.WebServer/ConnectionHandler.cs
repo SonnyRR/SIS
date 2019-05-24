@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
 
     using SIS.HTTP.Common;
+    using SIS.HTTP.Cookies;
     using SIS.HTTP.Enums;
     using SIS.HTTP.Exceptions;
     using SIS.HTTP.Requests;
@@ -14,6 +15,7 @@
     using SIS.HTTP.Responses.Contracts;
     using SIS.WebServer.Results;
     using SIS.WebServer.Routing;
+    using SIS.WebServer.Sessions;
 
     internal class ConnectionHandler
     {
@@ -66,7 +68,10 @@
                 {
                     Console.WriteLine($"Processing: [Method: {request.RequestMethod} | Path: {request.Path}]{Environment.NewLine}");
 
+                    var sessionId = this.SetRequestSession(request);
                     IHttpResponse response = this.HandleRequest(request);
+                    this.SetResponseSession(response, sessionId);
+
                     await this.PrepareResponse(response);
                 }
             }
@@ -99,6 +104,37 @@
         {
             byte[] segments = response.GetBytes();
             await this.client.SendAsync(segments, SocketFlags.None);
+        }
+
+        private string SetRequestSession(IHttpRequest httpRequest)
+        {
+            string sessionId;
+
+            if (httpRequest.Cookies.ContainsCookie(HttpSessionStorage.SessionCookieKey))
+            {
+                var cookie = httpRequest
+                    .Cookies
+                    .GetCookie(HttpSessionStorage.SessionCookieKey);
+
+                sessionId = cookie.Value;
+                httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
+            }
+
+            else
+            {
+                sessionId = Guid.NewGuid().ToString();
+                httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
+            }
+
+            return sessionId;
+        }
+
+        private void SetResponseSession(IHttpResponse httpResponse, string sessionId)
+        {
+            if (sessionId != null)
+            {
+                httpResponse.AddCookie(new HttpCookie(HttpSessionStorage.SessionCookieKey, sessionId));
+            }
         }
     }
 }

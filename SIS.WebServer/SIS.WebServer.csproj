@@ -12,6 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Results\" />
+    <Folder Include="Sessions\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIS.HTTP\SIS.HTTP.csproj" />
