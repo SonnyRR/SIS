@@ -42,6 +42,7 @@
         public HttpRequestMethod RequestMethod { get; private set; }
 
         public IHttpCookieCollection Cookies { get; }
+
         public IHttpSession Session { get; set; }
 
 

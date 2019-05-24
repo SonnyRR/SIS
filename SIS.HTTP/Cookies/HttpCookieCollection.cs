@@ -9,7 +9,6 @@
     public class HttpCookieCollection : IHttpCookieCollection
     {
         private Dictionary<string, HttpCookie> cookies;
-        private const string HttpCookieStringSeparator = "; ";
 
         public HttpCookieCollection()
         {

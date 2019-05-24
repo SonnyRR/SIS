@@ -15,6 +15,7 @@ namespace SIS.HTTP.Cookies
         {
             CoreValidator.ThrowIfNullOrEmpty(key, nameof(key));
             CoreValidator.ThrowIfNullOrEmpty(value, nameof(value));
+            CoreValidator.ThrowIfNullOrEmpty(path, nameof(path));
 
             this.Key = key;
             this.Value = value;

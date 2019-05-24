@@ -1,7 +1,7 @@
 ﻿namespace SIS.WebServer.Sessions
 {
-    using System;
     using System.Collections.Concurrent;
+
     using SIS.HTTP.Sessions;
     using SIS.HTTP.Sessions.Contracts;
 
