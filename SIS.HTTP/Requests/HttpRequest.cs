@@ -69,8 +69,8 @@
             this.ParseRequestMethod(requestLine);
             this.ParseRequestUrl(requestLine);
             this.ParseRequestPath();
-            this.ParseHeaders(wholeRequest);
-            //this.ParseCookies();
+            this.ParseRequestHeaders(wholeRequest);
+            this.ParseRequestCookies();
 
             string formParamsAsString = wholeRequest[wholeRequest.Length - 1];
             this.ParseRequestParameters(formParamsAsString);
@@ -156,7 +156,7 @@
         /// </summary>
         /// <param name="splittedRequest">Splitted request.</param>
         /// <exception cref="BadRequestException">Throws a BadRequestException if there is no “Host” Header present after the parsing.</exception>
-        private void ParseHeaders(ICollection<string> splittedRequest)
+        private void ParseRequestHeaders(ICollection<string> splittedRequest)
         {
             foreach (var headerPair in splittedRequest.Skip(1))
             {
