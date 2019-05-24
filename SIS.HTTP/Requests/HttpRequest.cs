@@ -65,7 +65,7 @@
             // https://docs.microsoft.com/en-us/dotnet/api/system.globalization.textinfo.totitlecase?view=netframework-4.8#examples
             //requestLine[0] = requestLine[0].ToLower();
 
-            if (this.IsRequestLineValid(requestLine))
+            if (!this.IsRequestLineValid(requestLine))
                 throw new BadRequestException();
 
             this.ParseRequestMethod(requestLine);
@@ -87,8 +87,7 @@
         {
             bool isValid = true;
 
-            if (requestLineArgs.Length != 3
-                || !Uri.IsWellFormedUriString(requestLineArgs[1], UriKind.Absolute) 
+            if (requestLineArgs.Length != 3   
                 || requestLineArgs[2] != GlobalConstants.HttpOneProtocolFragment)
             {
                 isValid = false;
