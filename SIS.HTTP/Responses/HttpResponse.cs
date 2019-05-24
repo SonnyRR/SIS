@@ -60,8 +60,6 @@
         {
             var responseLineAsString = this.ToString();
 
-            // NB: Use consistent encodings when converting to byte[]
-            // as there is difference when encoding/decoding from bytes.
             var responseLineAsBytes = Encoding.UTF8.GetBytes(responseLineAsString);
             var response = new byte[responseLineAsBytes.Length + this.Content.Length];
 

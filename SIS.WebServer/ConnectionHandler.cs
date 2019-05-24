@@ -64,7 +64,7 @@
             {
                 IHttpRequest request = await this.ReadRequest();
 
-                if (request != null)                    
+                if (request != null)
                 {
                     Console.WriteLine($"Processing: [Method: {request.RequestMethod} | Path: {request.Path}]{Environment.NewLine}");
 
@@ -83,7 +83,7 @@
 
             catch (Exception ex)
             {
-                await this.PrepareResponse(new TextResult(ex.ToString(), HttpResponseStatusCode.InternalServerError));                   
+                await this.PrepareResponse(new TextResult(ex.ToString(), HttpResponseStatusCode.InternalServerError));
             }
 
             this.client.Shutdown(SocketShutdown.Both);
@@ -117,16 +117,16 @@
                     .GetCookie(HttpSessionStorage.SessionCookieKey);
 
                 sessionId = cookie.Value;
-                httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
             }
 
             else
             {
                 sessionId = Guid.NewGuid().ToString();
-                httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
             }
 
-            return sessionId;
+            httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
+
+            return httpRequest.Session.Id;
         }
 
         private void SetResponseSession(IHttpResponse httpResponse, string sessionId)
