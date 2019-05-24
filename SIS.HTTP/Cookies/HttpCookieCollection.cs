@@ -39,21 +39,19 @@
 
         public IEnumerator<HttpCookie> GetEnumerator()
         {
-            foreach (var kvp in this.cookies)
-            {
-                yield return kvp.Value;
-            }
+            return this.cookies
+                .Values
+                .GetEnumerator();
         }
 
         public bool HasCookies()
         {
-            return this.cookies.Count > 0 ? true : false;
+            return this.cookies.Count > 0;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            // FIXME
-            return (IEnumerator)this.GetEnumerator();
+            return this.GetEnumerator();
         }
 
         public override string ToString()
@@ -62,7 +60,7 @@
 
             foreach (var cookie in this.cookies.Values)
             {
-                builder.Append($"Set-Cookie: {cookie}{GlobalConstants.HttpNewLine}");
+                builder.Append($"Set-Cookie: {cookie}").Append(GlobalConstants.HttpNewLine);
             }
 
             return builder.ToString();
