@@ -46,19 +46,26 @@ Cookie: simpleCookie=test; lang=bg";
             Assert.Equal(expectedHeadersAsString, requestHeaders);
         }
 
-        [Fact]
-        public void ParseRequestShouldThrowExceptionWhenRequestLineIsInvalid()
+        [Theory]
+        [InlineData(@"GET /users/profile/show/vasilkotsev?simplequery=value\r\nHost: softuni.bg\r\nConnection: keep-alive\r\n")]
+        [InlineData(@"/users/profile/show/vasilkotsev?simplequery=value HTTP/1.1\r\nHost: softuni.bg\r\nConnection: keep-alive\r\n")]
+        public void ParseRequestShouldThrowExceptionWhenRequestLineIsInvalid(string requestAsString)
         {
-            var requestAsStringWithoutProtocol = @"GET /users/profile/show/vasilkotsev?simplequery=value
-Host: softuni.bg
-Connection: keep-alive";
 
-            var requestAsStringWithoutMethod = @"/users/profile/show/vasilkotsev?simplequery=value HTTP/1.1
-Host: softuni.bg
-Connection: keep-alive";
+            Assert.Throws(typeof(BadRequestException), () => new HttpRequest(requestAsString));
+        }
 
-            Assert.Throws(typeof(BadRequestException), () => new HttpRequest(requestAsStringWithoutProtocol));
-            Assert.Throws(typeof(BadRequestException), () => new HttpRequest(requestAsStringWithoutMethod));
+
+        //FIXME
+        // Broken test
+        [Theory]
+        [InlineData("POST /test HTTP/1.1\r\nHost: foo.example\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nfield1=value1&field2=value2", 2)]
+        [InlineData("POST /test HTTP/1.1\r\nHost: foo.example\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nfield1=value1&field1=value2", 1)]
+        public void RequestShouldParseFormDataCorrectly(string requestAsString, int expectedCount)
+        {
+            HttpRequest request = new HttpRequest(requestAsString);
+
+            Assert.Equal(request.FormData.Count, expectedCount);
         }
     }
 }
