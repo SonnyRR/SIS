@@ -132,15 +132,19 @@
         private void ParseRequestPath()
         {
             // FIXME
-            // Find a better way to parse the path from the url string.            
-            var urlSplitted = this.Url
+            // Find a better way to parse the path from the url string.
+            var localUrlQueryIndex = this.Url.IndexOf('?');
+
+            var pathTrimmed = this.Url
+                .Remove(localUrlQueryIndex, this.Url.Length - localUrlQueryIndex);
+
+            var urlSplitted = pathTrimmed
                 .Split('/', StringSplitOptions.RemoveEmptyEntries)
                 .ToList();
 
             if (urlSplitted.Count > 0)
             {             
-
-                this.Path = $"/{string.Join("/", urlSplitted).TrimEnd('/')}";
+                this.Path = $"/{string.Join("/", urlSplitted)}";
             }
 
             else
