@@ -49,11 +49,16 @@ Cookie: simpleCookie=test; lang=bg";
         [Fact]
         public void ParseRequestShouldThrowExceptionWhenRequestLineIsInvalid()
         {
-            var requestAsString = @"GET /users/profile/show/vasilkotsev?simplequery=value
+            var requestAsStringWithoutProtocol = @"GET /users/profile/show/vasilkotsev?simplequery=value
 Host: softuni.bg
 Connection: keep-alive";
 
-            Assert.Throws(typeof(BadRequestException), () => new HttpRequest(requestAsString));
+            var requestAsStringWithoutMethod = @"/users/profile/show/vasilkotsev?simplequery=value HTTP/1.1
+Host: softuni.bg
+Connection: keep-alive";
+
+            Assert.Throws(typeof(BadRequestException), () => new HttpRequest(requestAsStringWithoutProtocol));
+            Assert.Throws(typeof(BadRequestException), () => new HttpRequest(requestAsStringWithoutMethod));
         }
     }
 }
