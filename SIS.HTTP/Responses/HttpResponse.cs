@@ -79,14 +79,15 @@
         {
             StringBuilder builder = new StringBuilder();
 
-            builder.Append($"{GlobalConstants.HttpOneProtocolFragment} {this.StatusCode.GetResponseLine()}{GlobalConstants.HttpNewLine}");
-            builder.Append($"{this.Headers.ToString()}{GlobalConstants.HttpNewLine}");
-            builder.Append(GlobalConstants.HttpNewLine);
+            builder.Append($"{GlobalConstants.HttpOneProtocolFragment} {this.StatusCode.GetResponseLine()}").Append(GlobalConstants.HttpNewLine);
+            builder.Append($"{this.Headers.ToString()}").Append(GlobalConstants.HttpNewLine);
 
             if (this.Cookies.HasCookies())
             {
-                builder.Append($"Set-Cookie: {this.Cookies}{GlobalConstants.HttpNewLine}");
+                builder.Append($"{this.Cookies}").Append(GlobalConstants.HttpNewLine);
             }
+
+            builder.Append(GlobalConstants.HttpNewLine);
 
             return builder.ToString();
         }
