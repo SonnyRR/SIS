@@ -16,7 +16,7 @@
     <Compile Remove="UnitTest1.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="SIS.HTTP.Tests\" />
+    <Folder Include="HTTP\" />
     <Folder Include="SIS.WebServer.Tests\" />
   </ItemGroup>
   <ItemGroup>
