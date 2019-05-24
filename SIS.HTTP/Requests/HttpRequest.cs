@@ -134,10 +134,11 @@
             // Find a better way to parse the path from the url string.
             var localUrlQueryIndex = this.Url.IndexOf('?');
 
-            var pathTrimmed = this.Url
-                .Remove(localUrlQueryIndex, this.Url.Length - localUrlQueryIndex);
+            var path = localUrlQueryIndex != -1
+                ? this.Url.Remove(localUrlQueryIndex, this.Url.Length - localUrlQueryIndex)
+                : this.Url;
 
-            var urlSplitted = pathTrimmed
+            var urlSplitted = path
                 .Split('/', StringSplitOptions.RemoveEmptyEntries)
                 .ToList();
 
