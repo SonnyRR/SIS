@@ -2,7 +2,7 @@
 {
     using System.Collections;
     using System.Collections.Generic;
-
+    using System.Text;
     using SIS.HTTP.Common;
     using SIS.HTTP.Cookies.Contracts;
 
@@ -58,7 +58,14 @@
 
         public override string ToString()
         {
-            return string.Join(HttpCookieStringSeparator, this.cookies.Values);
+            StringBuilder builder = new StringBuilder();
+
+            foreach (var cookie in this.cookies.Values)
+            {
+                builder.Append($"Set-Cookie: {cookie}{GlobalConstants.HttpNewLine}");
+            }
+
+            return builder.ToString();
         }
     }
 }
