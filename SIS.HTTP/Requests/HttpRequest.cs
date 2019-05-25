@@ -55,16 +55,12 @@
             CoreValidator.ThrowIfNullOrEmpty(requestString, nameof(requestString));
 
             string[] wholeRequest = requestString
-                .Split(new[] { GlobalConstants.HttpNewLine }, StringSplitOptions.None);
+                .Split(GlobalConstants.HttpNewLine, StringSplitOptions.None);
 
             string[] requestLine = wholeRequest[0]
                  .Trim()
-                 .Split();
-
-            // .ToLower() fixes the all upper case behaviour caused by TextInfo.ToTitleCase():
-            // https://docs.microsoft.com/en-us/dotnet/api/system.globalization.textinfo.totitlecase?view=netframework-4.8#examples
-            //requestLine[0] = requestLine[0].ToLower();
-
+                 .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            
             if (!this.IsRequestLineValid(requestLine))
                 throw new BadRequestException();
 
@@ -130,8 +126,6 @@
         /// </summary>
         private void ParseRequestPath()
         {
-            // FIXME
-            // Find a better way to parse the path from the url string.
             var localUrlQueryIndex = this.Url.IndexOf('?');
 
             var path = localUrlQueryIndex != -1
@@ -144,7 +138,7 @@
 
             if (urlSplitted.Count > 0)
             {             
-                this.Path = $"/{string.Join("/", urlSplitted)}";
+                this.Path = $"/{string.Join('/', urlSplitted)}";
             }
 
             else
@@ -170,8 +164,8 @@
 
                 var kvp = headerPair.Split(": ", StringSplitOptions.RemoveEmptyEntries);
 
-                var currentHeader =
-                    new HttpHeader(kvp[0], kvp[1].Replace(GlobalConstants.HttpNewLine, string.Empty));
+                var currentHeader = new HttpHeader(
+                    kvp[0], kvp[1].Replace(GlobalConstants.HttpNewLine, string.Empty));
 
                 this.Headers.AddHeader(currentHeader);
             }
@@ -195,7 +189,8 @@
 
                 foreach (var cookieAsAString in cookiesValues)
                 {
-                    var cookieSplitted = cookieAsAString.Split('=', StringSplitOptions.RemoveEmptyEntries);
+                    var cookieSplitted = cookieAsAString
+                        .Split('=', StringSplitOptions.RemoveEmptyEntries);
 
                     var cookieKey = cookieSplitted[0];
                     var cookieVal = cookieSplitted[1];
@@ -219,7 +214,7 @@
                 isValid = false;
 
             var splittedQuery = queryString
-                .Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+                .Split('=', StringSplitOptions.RemoveEmptyEntries);
 
             if (splittedQuery.Length == 1)
                 isValid = false;
@@ -236,7 +231,6 @@
         private void ParseQueryParameters()
         {
             // It's better to use HttpUtility.ParseQueryString() but the point is to write these methods by hand.
-
             var splittedUrlTokens = this.Url
                 .Split(new[] { '?' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -254,11 +248,14 @@
 
                 foreach (var pair in queryPairs)
                 {
-                    var pairTokens = pair.Split("=", StringSplitOptions.RemoveEmptyEntries);
+                    var pairTokens = pair.Split('=', StringSplitOptions.RemoveEmptyEntries);
 
                     var key = pairTokens[0];
                     var value = pairTokens[1];
 
+                    // FIXME
+                    // What happens when we need to store the same key with multiple values
+                    // like in a multiple select or checkboxes ?
                     if (!this.QueryData.ContainsKey(key))
                         this.QueryData[key] = value;
                 }
@@ -275,16 +272,19 @@
             CoreValidator.ThrowIfNullOrEmpty(formData, nameof(formData));
 
             var dataPairs = formData
-                .Split("&", StringSplitOptions.RemoveEmptyEntries);
+                .Split('&', StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var pair in dataPairs)
             {
                 var pairTokens = pair
-                    .Split("=", StringSplitOptions.RemoveEmptyEntries);
+                    .Split('=', StringSplitOptions.RemoveEmptyEntries);
 
                 var key = pairTokens[0];
                 var value = pairTokens[1];
 
+                // FIXME
+                // What happens when we need to store the same key with multiple values
+                // like in a multiple select or checkboxes ?
                 if (!this.FormData.ContainsKey(key))
                     this.FormData[key] = value;
             }
