@@ -12,6 +12,12 @@ namespace SIS.HTTP.Cookies
 
         public HttpCookie(string key, string value,
             int expires = HttpCookiesDefaultExpirationDays, string path = HttpCookieDefaultPath)
+            : this(key, value, isNew: true, expires, path)
+        {            
+        }
+
+        public HttpCookie(string key, string value, bool isNew,
+            int expires = HttpCookiesDefaultExpirationDays, string path = HttpCookieDefaultPath)
         {
             CoreValidator.ThrowIfNullOrEmpty(key, nameof(key));
             CoreValidator.ThrowIfNullOrEmpty(value, nameof(value));
@@ -21,13 +27,7 @@ namespace SIS.HTTP.Cookies
             this.Value = value;
             this.Expires = DateTime.UtcNow.AddDays(expires);
             this.Path = path;
-            this.HttpOnly = true;
-        }
-
-        public HttpCookie(string key, string value, bool isNew,
-            int expires = HttpCookiesDefaultExpirationDays, string path = HttpCookieDefaultPath)
-            : this(key, value, expires, path)
-        {
+            this.HttpOnly = isNew;
             this.IsNew = isNew;
         }
 
@@ -41,7 +41,7 @@ namespace SIS.HTTP.Cookies
 
         public bool IsNew { get; }
 
-        public bool HttpOnly { get; set; } 
+        public bool HttpOnly { get; set; }
 
         public void Delete()
         {
