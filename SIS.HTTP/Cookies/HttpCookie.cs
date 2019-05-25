@@ -1,9 +1,9 @@
-﻿using SIS.HTTP.Common;
-using System;
-using System.Text;
-
-namespace SIS.HTTP.Cookies
+﻿namespace SIS.HTTP.Cookies
 {
+    using SIS.HTTP.Common;
+    using System;
+    using System.Text;
+
     public class HttpCookie
     {
 
