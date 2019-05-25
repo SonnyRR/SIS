@@ -58,9 +58,9 @@
         /// <returns>The full response as <see cref="System.Byte"/>[].</returns>
         public byte[] GetBytes()
         {
-            var responseLineAsString = this.ToString();
+            var responseLineAndHeadersAsString = this.ToString();
 
-            var responseLineAsBytes = Encoding.UTF8.GetBytes(responseLineAsString);
+            var responseLineAsBytes = Encoding.UTF8.GetBytes(responseLineAndHeadersAsString);
             var response = new byte[responseLineAsBytes.Length + this.Content.Length];
 
             for (int index = 0; index < responseLineAsBytes.Length; index++)

@@ -44,7 +44,7 @@
         {
             CoreValidator.ThrowIfNullOrEmpty(name, nameof(name));
 
-            return this.parameters[name];
+            return this.parameters?[name];
         }
     }
 }
