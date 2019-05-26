@@ -35,8 +35,7 @@
             Console.WriteLine($"SIS Server is running on: {LocalhostIpAddress}:{this.port}{Environment.NewLine}" +
                 $"OS: {RuntimeInformation.OSDescription}{Environment.NewLine}");
 
-            var task = Task.Run(this.Listen);
-            task.Wait();
+            Task.Run(this.Listen).GetAwaiter().GetResult();            
         }
 
         public async Task Listen()
