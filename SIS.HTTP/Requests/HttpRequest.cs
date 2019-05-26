@@ -60,7 +60,7 @@
             string[] requestLine = wholeRequest[0]
                  .Trim()
                  .Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            
+
             if (!this.IsRequestLineValid(requestLine))
                 throw new BadRequestException();
 
@@ -83,7 +83,7 @@
         {
             bool isValid = true;
 
-            if (requestLineArgs.Length != 3   
+            if (requestLineArgs.Length != 3
                 || requestLineArgs[2] != GlobalConstants.HttpOneProtocolFragment)
             {
                 isValid = false;
@@ -137,7 +137,7 @@
                 .ToList();
 
             if (urlSplitted.Count > 0)
-            {             
+            {
                 this.Path = $"/{string.Join('/', urlSplitted)}";
             }
 
@@ -195,7 +195,7 @@
                     var cookieKey = cookieSplitted[0];
                     var cookieVal = cookieSplitted[1];
 
-                    HttpCookie cookie = new HttpCookie(cookieKey, cookieVal);
+                    HttpCookie cookie = new HttpCookie(cookieKey, cookieVal, false);
                     this.Cookies.AddCookie(cookie);
                 }
             }
