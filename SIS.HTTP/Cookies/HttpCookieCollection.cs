@@ -58,7 +58,7 @@
         {
             StringBuilder builder = new StringBuilder();
 
-            foreach (var cookie in this.cookies.Values)
+            foreach (var cookie in this)
             {
                 builder.Append($"Set-Cookie: {cookie}").Append(GlobalConstants.HttpNewLine);
             }
