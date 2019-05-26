@@ -13,6 +13,7 @@
     using SIS.HTTP.Requests.Contracts;
     using SIS.HTTP.Responses;
     using SIS.HTTP.Responses.Contracts;
+    using SIS.HTTP.Sessions.Contracts;
     using SIS.WebServer.Results;
     using SIS.WebServer.Routing;
     using SIS.WebServer.Sessions;
@@ -110,32 +111,41 @@
 
         private string SetRequestSession(IHttpRequest httpRequest)
         {
-            string sessionId;
-
             if (httpRequest.Cookies.ContainsCookie(HttpSessionStorage.SessionCookieKey))
             {
                 var cookie = httpRequest
                     .Cookies
                     .GetCookie(HttpSessionStorage.SessionCookieKey);
 
-                sessionId = cookie.Value;
+                string sessionId = cookie.Value;
+
+                if (HttpSessionStorage.ContainsSession(sessionId))
+                {
+                    httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
+                }
             }
 
-            else
+            return httpRequest.Session?.Id;
+        }
+
+        /// <summary>
+        /// Checks if the session id is present in the HttpSessionStorage repository
+        /// then creates a session and attaches a Set-Cookie header to the response.
+        /// </summary>
+        /// <param name="httpResponse">Response</param>
+        /// <param name="sessionId">Session Id</param>
+        private void SetResponseSession(IHttpResponse httpResponse, string sessionId)
+        {
+            
+            if (string.IsNullOrWhiteSpace(sessionId))
             {
                 sessionId = Guid.NewGuid().ToString();
             }
 
-            httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
-
-            return httpRequest.Session.Id;
-        }
-
-        private void SetResponseSession(IHttpResponse httpResponse, string sessionId)
-        {
-            if (sessionId != null)
+            if (!HttpSessionStorage.ContainsSession(sessionId))
             {
-                httpResponse.AddCookie(new HttpCookie(HttpSessionStorage.SessionCookieKey, sessionId));
+                IHttpSession newSession = HttpSessionStorage.AddOrUpdateSession(sessionId);
+                httpResponse.AddCookie(new HttpCookie(HttpSessionStorage.SessionCookieKey, newSession.Id));
             }
         }
     }
