@@ -3,13 +3,14 @@
     using System;
     using System.IO;
     using System.Runtime.CompilerServices;
+
     using SIS.HTTP.Enums;
     using SIS.HTTP.Responses.Contracts;
     using SIS.WebServer.Results;
 
-    public class BaseController
+    public abstract class BaseController
     {
-        public IHttpResponse View([CallerMemberName] string view = null)
+        protected IHttpResponse View([CallerMemberName] string view = null)
         {
             string controllerName = this.GetType()
                 .Name
