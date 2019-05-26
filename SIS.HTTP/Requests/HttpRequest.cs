@@ -195,7 +195,7 @@
                     var cookieKey = cookieSplitted[0];
                     var cookieVal = cookieSplitted[1];
 
-                    HttpCookie cookie = new HttpCookie(cookieKey, cookieVal, false);
+                    HttpCookie cookie = new HttpCookie(cookieKey, cookieVal, isNew: false);
                     this.Cookies.AddCookie(cookie);
                 }
             }
