@@ -1,11 +1,10 @@
 ﻿namespace SIS.HTTP.Headers
 {
-    using System;
     using System.Linq;
     using System.Collections.Generic;
+    using System.Text;
 
     using SIS.HTTP.Headers.Contracts;
-    using System.Text;
     using SIS.HTTP.Common;
 
     public class HttpHeaderCollection : IHttpHeaderCollection
@@ -23,8 +22,7 @@
         /// <param name="header">Header.</param>
         public void AddHeader(HttpHeader header)
         {
-            // FIXME
-            // Probably should check for duplicate keys.
+            CoreValidator.ThrowIfNull(header, nameof(header));
             this.headers.Add(header.Key, header);
         }
 
@@ -35,6 +33,8 @@
         /// <param name="key">Key.</param>
         public bool ContainsHeader(string key)
         {
+            CoreValidator.ThrowIfNull(key, nameof(key));
+
             return this.headers.ContainsKey(key);
         }
 
@@ -45,6 +45,8 @@
         /// <param name="key">Key.</param>
         public HttpHeader GetHeader(string key)
         {
+            CoreValidator.ThrowIfNull(key, nameof(key));
+
             return this.headers
                 .FirstOrDefault(kvp => kvp.Key == key)
                 .Value;
