@@ -262,21 +262,23 @@
             CoreValidator.ThrowIfNullOrEmpty(formData, nameof(formData));
 
             var dataPairs = formData
-                .Split('&', StringSplitOptions.RemoveEmptyEntries);
+                .Split('&', StringSplitOptions.RemoveEmptyEntries)
+                .Select(kvp => kvp.Split('=', 2, StringSplitOptions.RemoveEmptyEntries))
+                .ToList();
 
-            foreach (var pair in dataPairs)
+            foreach (var kvp in dataPairs)
             {
-                var pairTokens = pair
-                    .Split('=', StringSplitOptions.RemoveEmptyEntries);
+                var key = kvp[0];
+                var value = kvp[1];
 
-                var key = pairTokens[0];
-                var value = pairTokens[1];
+                if (!this.FormData.ContainsKey(key))
+                {
+                    this.FormData.Add(key, new HashSet<string>());
+                }
 
                 // FIXME
-                // What happens when we need to store the same key with multiple values
-                // like in a multiple select or checkboxes ?
-                if (!this.FormData.ContainsKey(key))
-                    this.FormData[key] = value;
+                // need refactoring
+                ((ISet<string>)this.FormData[key]).Add(value);
             }
         }
 
