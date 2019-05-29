@@ -17,10 +17,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="HTTP\" />
-    <Folder Include="SIS.WebServer.Tests\" />
+    <Folder Include="SIS.MvcFramework.Tests\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SIS.WebServer\SIS.WebServer.csproj" />
+    <ProjectReference Include="..\SIS.MvcFramework\SIS.MvcFramework.csproj" />
     <ProjectReference Include="..\SIS.HTTP\SIS.HTTP.csproj" />
   </ItemGroup>
 </Project>
