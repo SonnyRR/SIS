@@ -67,6 +67,7 @@
             this.ParseRequestMethod(requestLine);
             this.ParseRequestUrl(requestLine);
             this.ParseRequestPath();
+
             this.ParseRequestHeaders(wholeRequest);
             this.ParseRequestCookies();
 
@@ -101,6 +102,7 @@
             var methodAsString = requestLineArgs[0];
 
             HttpRequestMethod method;
+
             bool isMethodParsedSuccessfuly = Enum.TryParse(methodAsString, ignoreCase: true, out method);
 
             if (!isMethodParsedSuccessfuly)
@@ -132,19 +134,7 @@
                 ? this.Url.Remove(localUrlQueryIndex, this.Url.Length - localUrlQueryIndex)
                 : this.Url;
 
-            var urlSplitted = path
-                .Split('/', StringSplitOptions.RemoveEmptyEntries)
-                .ToList();
-
-            if (urlSplitted.Count > 0)
-            {
-                this.Path = $"/{string.Join('/', urlSplitted)}";
-            }
-
-            else
-            {
-                this.Path = "/";
-            }
+            this.Path = path;
         }
 
         /// <summary>
@@ -180,17 +170,17 @@
         /// </summary>
         private void ParseRequestCookies()
         {
-            if (this.Headers.ContainsHeader(GlobalConstants.CookieHeaderName))
+            if (this.Headers.ContainsHeader(HttpHeader.Cookie))
             {
                 var cookiesValues = this.Headers
-                    .GetHeader(GlobalConstants.CookieHeaderName)
+                    .GetHeader(HttpHeader.Cookie)
                     .Value
                     .Split("; ", StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (var cookieAsAString in cookiesValues)
                 {
                     var cookieSplitted = cookieAsAString
-                        .Split('=', StringSplitOptions.RemoveEmptyEntries);
+                        .Split('=', 2, StringSplitOptions.RemoveEmptyEntries);
 
                     var cookieKey = cookieSplitted[0];
                     var cookieVal = cookieSplitted[1];
