@@ -1,54 +1,51 @@
-﻿namespace SIS.MvcFramework
+﻿using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading.Tasks;
+using SIS.HTTP.Common;
+using SIS.MvcFramework.Routing;
+
+namespace SIS.MvcFramework
 {
-    using System;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Runtime.InteropServices;
-    using System.Threading.Tasks;
-
-    using SIS.MvcFramework.Routing;
-
     public class Server
     {
-        private const string LocalhostIpAddress = "127.0.0.1";
+        private const string LocalHostIpAddress = "127.0.0.1";
 
         private readonly int port;
-        private readonly TcpListener listener;
-        private readonly ServerRoutingTable routingTable;
+
+        private readonly TcpListener tcpListener;
+
+        private IServerRoutingTable serverRoutingTable;
+
         private bool isRunning;
 
-        public Server(int port, ServerRoutingTable routingTable)
+        public Server(int port, IServerRoutingTable serverRoutingTable)
         {
+            CoreValidator.ThrowIfNull(serverRoutingTable, nameof(serverRoutingTable));
+
             this.port = port;
-            this.routingTable = routingTable;
+            this.serverRoutingTable = serverRoutingTable;
 
-            var ipAddress = IPAddress.Parse(LocalhostIpAddress);
-            this.listener = new TcpListener(ipAddress, this.port);
+            this.tcpListener = new TcpListener(IPAddress.Parse(LocalHostIpAddress), port);
+        }
 
+        private async Task ListenAsync(Socket client)
+        {
+            var connectionHandler = new ConnectionHandler(client, this.serverRoutingTable);
+            await connectionHandler.ProcessRequestAsync();
         }
 
         public void Run()
         {
-            this.listener.Start();
+            this.tcpListener.Start();
             this.isRunning = true;
 
-            Console.WriteLine($"SIS Server is running on: {LocalhostIpAddress}:{this.port}{Environment.NewLine}" +
-                $"OS: {RuntimeInformation.OSDescription}{Environment.NewLine}");
+            Console.WriteLine($"Server started at http://{LocalHostIpAddress}:{this.port}");
 
-            Task.Run(this.Listen).GetAwaiter().GetResult();            
-        }
-
-        public async Task Listen()
-        {
             while (this.isRunning)
             {
-                Console.WriteLine("Waiting for client request...");
-
-                using (var client = this.listener.AcceptSocketAsync().GetAwaiter().GetResult())
-                {
-                    var connectionHandler = new ConnectionHandler(client, this.routingTable);
-                    await connectionHandler.ProcessRequestAsync();                    
-                }
+                var client = this.tcpListener.AcceptSocketAsync().GetAwaiter().GetResult();
+                Task.Run(() => this.ListenAsync(client));
             }
         }
     }
