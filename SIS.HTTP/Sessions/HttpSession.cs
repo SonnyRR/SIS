@@ -14,10 +14,13 @@
             CoreValidator.ThrowIfNullOrEmpty(id, nameof(id));
 
             this.parameters = new Dictionary<string, object>();
+            this.IsNew = true;
             this.Id = id;
         }
 
         public string Id { get; }
+
+        public bool IsNew { get; set; }
 
         public void AddParameter(string name, object parameter)
         {
