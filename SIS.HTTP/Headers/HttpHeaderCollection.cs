@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Text;
 
-    using SIS.HTTP.Headers.Contracts;
     using SIS.HTTP.Common;
 
     public class HttpHeaderCollection : IHttpHeaderCollection

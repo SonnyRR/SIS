@@ -1,11 +1,12 @@
-﻿using SIS.HTTP.Cookies.Contracts;
-using SIS.HTTP.Enums;
-using SIS.HTTP.Headers;
-using SIS.HTTP.Sessions.Contracts;
-using System.Collections.Generic;
-
-namespace SIS.HTTP.Requests.Contracts
+﻿namespace SIS.HTTP.Requests
 {
+    using System.Collections.Generic;
+
+    using SIS.HTTP.Cookies.Contracts;
+    using SIS.HTTP.Enums;
+    using SIS.HTTP.Headers;
+    using SIS.HTTP.Sessions;
+
     public interface IHttpRequest
     {
         string Path { get; }

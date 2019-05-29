@@ -16,7 +16,5 @@
     <Folder Include="Extensions\" />
     <Folder Include="Headers\" />
     <Folder Include="Responses\" />
-    <Folder Include="Headers\Contracts\" />
-    <Folder Include="Responses\Contracts\" />
   </ItemGroup>
 </Project>

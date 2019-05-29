@@ -3,7 +3,6 @@
     using System.Collections.Generic;
 
     using SIS.HTTP.Common;
-    using SIS.HTTP.Sessions.Contracts;
 
     public class HttpSession : IHttpSession
     {

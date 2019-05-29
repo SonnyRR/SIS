@@ -9,11 +9,9 @@
     using SIS.HTTP.Cookies;
     using SIS.HTTP.Enums;
     using SIS.HTTP.Exceptions;
-    using SIS.HTTP.Requests;
-    using SIS.HTTP.Requests.Contracts;
+    using SIS.HTTP.Requests;   
     using SIS.HTTP.Responses;
-    using SIS.HTTP.Responses.Contracts;
-    using SIS.HTTP.Sessions.Contracts;
+    using SIS.HTTP.Sessions;
     using SIS.WebServer.Results;
     using SIS.WebServer.Routing;
     using SIS.WebServer.Sessions;

@@ -1,11 +1,10 @@
 ﻿namespace SIS.Launcher.Controllers
 {
-    using System;
     using System.IO;
     using System.Runtime.CompilerServices;
 
     using SIS.HTTP.Enums;
-    using SIS.HTTP.Responses.Contracts;
+    using SIS.HTTP.Responses;
     using SIS.WebServer.Results;
 
     public abstract class BaseController

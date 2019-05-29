@@ -11,8 +11,7 @@
     using SIS.HTTP.Enums;
     using SIS.HTTP.Exceptions;
     using SIS.HTTP.Headers;
-    using SIS.HTTP.Requests.Contracts;
-    using SIS.HTTP.Sessions.Contracts;
+    using SIS.HTTP.Sessions;
 
     public class HttpRequest : IHttpRequest
     {
