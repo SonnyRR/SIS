@@ -5,7 +5,8 @@
 
     public abstract class ActionResult : HttpResponse
     {
-        protected ActionResult(HttpResponseStatusCode httpResponseStatusCode) : base(httpResponseStatusCode)
+        protected ActionResult(HttpResponseStatusCode httpResponseStatusCode) 
+            : base(httpResponseStatusCode)
         {
         }
     }
