@@ -1,4 +1,4 @@
-﻿namespace SIS.WebServer
+﻿namespace SIS.MvcFramework
 {
     using System;
     using System.Net.Sockets;
@@ -12,9 +12,9 @@
     using SIS.HTTP.Requests;   
     using SIS.HTTP.Responses;
     using SIS.HTTP.Sessions;
-    using SIS.WebServer.Results;
-    using SIS.WebServer.Routing;
-    using SIS.WebServer.Sessions;
+    using SIS.MvcFramework.Results;
+    using SIS.MvcFramework.Routing;
+    using SIS.MvcFramework.Sessions;
 
     internal class ConnectionHandler
     {

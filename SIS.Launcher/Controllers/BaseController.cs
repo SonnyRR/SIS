@@ -5,7 +5,7 @@
 
     using SIS.HTTP.Enums;
     using SIS.HTTP.Responses;
-    using SIS.WebServer.Results;
+    using SIS.MvcFramework.Results;
 
     public abstract class BaseController
     {
