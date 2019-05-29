@@ -1,7 +1,7 @@
-﻿using SIS.HTTP.Common;
-
-namespace SIS.HTTP.Headers
+﻿namespace SIS.HTTP.Headers
 {
+    using SIS.HTTP.Common;
+
     public class HttpHeader
     {
         public const string Cookie = "Cookie";
@@ -20,7 +20,7 @@ namespace SIS.HTTP.Headers
 
         public string Key { get; }
 
-        public string Value { get;}
+        public string Value { get; }
 
         public override string ToString()
         {

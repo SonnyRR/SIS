@@ -19,7 +19,7 @@
         }
 
         public HttpResponse(HttpResponseStatusCode statusCode)
-            :this()
+            : this()
         {
             this.StatusCode = statusCode;
         }

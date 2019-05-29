@@ -1,12 +1,12 @@
 ﻿namespace SIS.HTTP.Cookies
 {
-    using SIS.HTTP.Common;
     using System;
     using System.Text;
 
+    using SIS.HTTP.Common;
+ 
     public class HttpCookie
     {
-
         private const int HttpCookiesDefaultExpirationDays = 3;
         private const string HttpCookieDefaultPath = "/";
 
@@ -55,7 +55,9 @@
             builder.Append($"{this.Key}={this.Value}; Expires={this.Expires:R}");
 
             if (this.HttpOnly)
+            {
                 builder.Append($"; HttpOnly");
+            }
 
             builder.Append($"; Path={this.Path}");
 

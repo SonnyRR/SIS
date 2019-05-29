@@ -6,7 +6,6 @@
 
     public class HttpSession : IHttpSession
     {
-
         private Dictionary<string, object> parameters;
 
         public HttpSession(string id)

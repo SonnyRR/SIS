@@ -43,7 +43,6 @@
 
         public IHttpSession Session { get; set; }
 
-
         /// <summary>
         /// Root call method. It calls all other methods to parse the request from plain text.
         /// Invoked by the constructor.
@@ -227,7 +226,7 @@
             {
                 var queryString = splittedUrlTokens[1];
 
-                var isValid = IsRequestQueryStringValid(queryString);
+                var isValid = this.IsRequestQueryStringValid(queryString);
 
                 if (!isValid)
                     throw new BadRequestException();
