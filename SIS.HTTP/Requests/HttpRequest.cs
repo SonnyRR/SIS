@@ -257,7 +257,7 @@
         /// </summary>
         /// <remarks>Does nothing if the Request contains NO Body.</remarks>
         /// <param name="formData">Form data.</param>
-        private void ParseFormDataParameters(string formData)
+        private void ParseRequestFormDataParameters(string formData)
         {
             CoreValidator.ThrowIfNullOrEmpty(formData, nameof(formData));
 
@@ -291,7 +291,7 @@
             this.ParseQueryParameters();
 
             if (formData != string.Empty)
-                this.ParseFormDataParameters(formData);
+                this.ParseRequestFormDataParameters(formData);
         }
     }
 }
