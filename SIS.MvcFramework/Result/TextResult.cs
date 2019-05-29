@@ -1,9 +1,10 @@
-﻿using System.Text;
-using SIS.HTTP.Enums;
-using SIS.HTTP.Headers;
-
-namespace SIS.MvcFramework.Result
+﻿namespace SIS.MvcFramework.Result
 {
+    using System.Text;
+
+    using SIS.HTTP.Enums;
+    using SIS.HTTP.Headers;
+
     public class TextResult : ActionResult
     {
         public TextResult(string content, HttpResponseStatusCode responseStatusCode, 

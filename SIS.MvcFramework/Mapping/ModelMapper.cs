@@ -1,13 +1,13 @@
-﻿using System;
-using System.Reflection;
-
-namespace SIS.MvcFramework.Mapping
+﻿namespace SIS.MvcFramework.Mapping
 {
+    using System;
+    using System.Reflection;
+
     public static class ModelMapper
     {
         public static TDestination ProjectTo<TDestination>(object origin)
         {
-            var destinationInstance = (TDestination) Activator.CreateInstance(typeof(TDestination));
+            var destinationInstance = (TDestination)Activator.CreateInstance(typeof(TDestination));
 
             foreach (var originProperty in origin.GetType().GetProperties())
             {

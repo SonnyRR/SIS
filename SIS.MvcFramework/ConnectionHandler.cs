@@ -1,22 +1,23 @@
-﻿using System;
-using System.IO;
-using System.Net.Sockets;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using SIS.HTTP.Common;
-using SIS.HTTP.Cookies;
-using SIS.HTTP.Enums;
-using SIS.HTTP.Exceptions;
-using SIS.HTTP.Requests;
-using SIS.HTTP.Responses;
-using SIS.HTTP.Sessions;
-using SIS.MvcFramework.Result;
-using SIS.MvcFramework.Routing;
-using SIS.MvcFramework.Sessions;
-
-namespace SIS.MvcFramework
+﻿namespace SIS.MvcFramework
 {
+    using System;
+    using System.IO;
+    using System.Net.Sockets;
+    using System.Reflection;
+    using System.Text;
+    using System.Threading.Tasks;
+
+    using SIS.HTTP.Common;
+    using SIS.HTTP.Cookies;
+    using SIS.HTTP.Enums;
+    using SIS.HTTP.Exceptions;
+    using SIS.HTTP.Requests;
+    using SIS.HTTP.Responses;
+    using SIS.HTTP.Sessions;
+    using SIS.MvcFramework.Result;
+    using SIS.MvcFramework.Routing;
+    using SIS.MvcFramework.Sessions;
+
     public class ConnectionHandler
     {
         private readonly Socket client;
@@ -166,6 +167,7 @@ namespace SIS.MvcFramework
             {
                 httpResponse = new TextResult(e.Message, HttpResponseStatusCode.InternalServerError);
             }
+
             this.PrepareResponse(httpResponse);
 
             this.client.Shutdown(SocketShutdown.Both);

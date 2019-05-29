@@ -8,16 +8,16 @@
 
     public class TextResult : HttpResponse
     {
-        public TextResult(string content, HttpResponseStatusCode statusCode
-            , string contentType = "text/plain; charset=utf8")
+        public TextResult(string content, HttpResponseStatusCode statusCode,
+            string contentType = "text/plain; charset=utf8")
             : base(statusCode)
         {
             this.Headers.AddHeader(new HttpHeader("Content-Type", contentType));
             this.Content = Encoding.UTF8.GetBytes(content);
         }
 
-        public TextResult(byte[] content, HttpResponseStatusCode statusCode
-            , string contentType = "text/plain; charset=utf8")
+        public TextResult(byte[] content, HttpResponseStatusCode statusCode, 
+            string contentType = "text/plain; charset=utf8")
             : base(statusCode)
         {
             this.Headers.AddHeader(new HttpHeader("Content-Type", contentType));

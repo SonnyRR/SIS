@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace SIS.MvcFramework.Identity
+﻿namespace SIS.MvcFramework.Identity
 {
+    using System.Collections.Generic;
+
     public class Principal
     {
         public Principal()

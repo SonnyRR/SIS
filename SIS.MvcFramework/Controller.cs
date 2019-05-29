@@ -1,32 +1,33 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using SIS.HTTP.Requests;
-using SIS.MvcFramework.Extensions;
-using SIS.MvcFramework.Identity;
-using SIS.MvcFramework.Result;
-
-namespace SIS.MvcFramework
+﻿namespace SIS.MvcFramework
 {
+    using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
+
+    using SIS.HTTP.Requests;
+    using SIS.MvcFramework.Extensions;
+    using SIS.MvcFramework.Identity;
+    using SIS.MvcFramework.Result;
+
     public abstract class Controller
     {
+        protected Dictionary<string, object> viewData;
+
         protected Controller()
         {
-            ViewData = new Dictionary<string, object>();
+            this.viewData = new Dictionary<string, object>();
         }
-
-        protected Dictionary<string, object> ViewData;
 
         // TODO: Refactor this
         public Principal User => 
             this.Request.Session.ContainsParameter("principal")
-            ? (Principal) this.Request.Session.GetParameter("principal")
+            ? (Principal)this.Request.Session.GetParameter("principal")
             : null;
 
         public IHttpRequest Request { get; set; }
 
         private string ParseTemplate(string viewContent)
         {
-            foreach (var param in ViewData)
+            foreach (var param in this.viewData)
             {
                 viewContent = viewContent.Replace($"@Model.{param.Key}",
                     param.Value.ToString());
@@ -62,7 +63,7 @@ namespace SIS.MvcFramework
 
             string viewContent = System.IO.File.ReadAllText("Views/" + controllerName + "/" + viewName + ".html");
 
-            viewContent = ParseTemplate(viewContent);
+            viewContent = this.ParseTemplate(viewContent);
 
             HtmlResult htmlResult = new HtmlResult(viewContent);
 

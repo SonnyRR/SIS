@@ -1,17 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
-using SIS.HTTP.Enums;
-using SIS.HTTP.Responses;
-using SIS.MvcFramework.Attributes;
-using SIS.MvcFramework.Attributes.Action;
-using SIS.MvcFramework.Attributes.Security;
-using SIS.MvcFramework.Result;
-using SIS.MvcFramework;
-using SIS.MvcFramework.Routing;
-
-namespace SIS.MvcFramework
+﻿namespace SIS.MvcFramework
 {
+    using System;
+    using System.Linq;
+    using System.Reflection;
+
+    using SIS.HTTP.Enums;
+    using SIS.HTTP.Responses;
+    using SIS.MvcFramework.Attributes;
+    using SIS.MvcFramework.Attributes.Action;
+    using SIS.MvcFramework.Attributes.Security;
+    using SIS.MvcFramework.Result;
+    using SIS.MvcFramework.Routing;
+
     public static class WebHost
     {
         public static void Start(IMvcApplication application)
@@ -91,7 +91,6 @@ namespace SIS.MvcFramework
             // sb.GetType().GetMethods();
             // Activator.CreateInstance(typeof(Server))
             var sb = DateTime.UtcNow;
-
         }
     }
 }

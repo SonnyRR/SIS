@@ -1,10 +1,7 @@
-﻿using SIS.MvcFramework.Routing;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SIS.MvcFramework
+﻿namespace SIS.MvcFramework
 {
+    using SIS.MvcFramework.Routing;
+
     public interface IMvcApplication
     {
         void Configure(IServerRoutingTable serverRoutingTable);
