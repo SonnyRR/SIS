@@ -133,12 +133,12 @@
             }
         }
 
-        private void PrepareResponse(IHttpResponse httpResponse)
+        private async Task PrepareResponse(IHttpResponse httpResponse)
         {
             // PREPARES RESPONSE -> MAPS IT TO BYTE DATA
             byte[] byteSegments = httpResponse.GetBytes();
 
-            this.client.Send(byteSegments, SocketFlags.None);
+            await this.client.SendAsync(byteSegments, SocketFlags.None);
         }
 
         public async Task ProcessRequestAsync()
@@ -168,7 +168,7 @@
                 httpResponse = new TextResult(e.Message, HttpResponseStatusCode.InternalServerError);
             }
 
-            this.PrepareResponse(httpResponse);
+            await this.PrepareResponse(httpResponse);
 
             this.client.Shutdown(SocketShutdown.Both);
         }
