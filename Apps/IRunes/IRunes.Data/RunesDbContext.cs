@@ -14,7 +14,7 @@ namespace IRunes.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(DatabaseConfiguration.ConnectionString);
+            optionsBuilder.UseSqlServer(DatabaseConfiguration.ConnectionStringMacOS);
 
             base.OnConfiguring(optionsBuilder);
         }
