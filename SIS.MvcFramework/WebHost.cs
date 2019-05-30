@@ -49,11 +49,11 @@
                     .Where(x => x.GetCustomAttributes()
                         .All(a => a.GetType() != typeof(NonActionAttribute)));
                 
-                foreach (var action in actions)
+                foreach (var actionMethod in actions)
                 {
-                    var path = $"/{controller.Name.Replace("Controller", string.Empty)}/{action.Name}";
+                    var path = $"/{controller.Name.Replace("Controller", string.Empty)}/{actionMethod.Name}";
 
-                    var attribute = action.GetCustomAttributes()
+                    var attribute = actionMethod.GetCustomAttributes()
                         .Where(x => x.GetType().IsSubclassOf(typeof(BaseHttpAttribute)))
                         .LastOrDefault() as BaseHttpAttribute;
 
@@ -82,8 +82,10 @@
 
                         // Security Authorization - TODO: Refactor this
                         var controllerPrincipal = ((Controller)controllerInstance).User;
-                        var authorizeAttribute = action.GetCustomAttributes()
-                            .LastOrDefault(a => a.GetType() == typeof(AuthorizeAttribute)) as AuthorizeAttribute;
+                        var authorizeAttribute = actionMethod
+                            .GetCustomAttributes()
+                            .LastOrDefault(a => a.GetType() == typeof(AuthorizeAttribute))
+                            as AuthorizeAttribute;
 
                         if (authorizeAttribute != null && !authorizeAttribute.IsInAuthority(controllerPrincipal))
                         {
@@ -91,7 +93,9 @@
                             return new HttpResponse(HttpResponseStatusCode.Forbidden);
                         }
 
-                        var response = action.Invoke(controllerInstance, new object[0]) as ActionResult;
+                        // This calls the Invoke() on the current controller method(aciton) to return
+                        // as the second param of Func<IHttpRequest, IHttpResponse>.
+                        var response = actionMethod.Invoke(controllerInstance, new object[0]) as ActionResult;
                         return response;
                     });
 
