@@ -2,6 +2,10 @@
 {
     using System.ComponentModel;
 
+    // FIXME
+    // TODO
+    // Missing enum member "Description" attributes will not work correctly
+    // when sent as a response to the client.
     public enum HttpResponseStatusCode
     {
         [Description("OK")]
@@ -15,6 +19,8 @@
         [Description("Bad Request")]
         BadRequest = 400,
         Unauthorized = 401,
+
+        [Description("Forbidden")]
         Forbidden = 403,
 
         [Description("Not Found")]
