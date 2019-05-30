@@ -1,6 +1,7 @@
 ﻿namespace SIS.MvcFramework
 {
     using System.Collections.Generic;
+    using System.IO;
     using System.Runtime.CompilerServices;
 
     using SIS.HTTP.Requests;
@@ -61,7 +62,8 @@
             string controllerName = GetType().Name.Replace("Controller", string.Empty);
             string viewName = view;
 
-            string viewContent = System.IO.File.ReadAllText("Views/" + controllerName + "/" + viewName + ".html");
+            string viewPath = Path.Combine("Views", controllerName, $"{viewName}.html");
+            string viewContent = System.IO.File.ReadAllText(viewPath);
 
             viewContent = this.ParseTemplate(viewContent);
 

@@ -54,7 +54,9 @@
                     var path = $"/{controller.Name.Replace("Controller", string.Empty)}/{actionMethod.Name}";
 
                     var attribute = actionMethod.GetCustomAttributes()
-                        .Where(x => x.GetType().IsSubclassOf(typeof(BaseHttpAttribute)))
+                        .Where(x => x
+                            .GetType()
+                            .IsSubclassOf(typeof(BaseHttpAttribute)))
                         .LastOrDefault() as BaseHttpAttribute;
 
                     var httpMethod = HttpRequestMethod.Get;
