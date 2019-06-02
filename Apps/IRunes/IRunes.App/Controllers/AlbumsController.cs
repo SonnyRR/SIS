@@ -64,7 +64,8 @@ namespace IRunes.App.Controllers
             string albumId = this.Request.QueryData["id"].ToString();
             Album albumFromDb = this.albumService.GetAlbumById(albumId);
 
-            AlbumDetailsViewModel albumViewModel = ModelMapper.ProjectTo<AlbumDetailsViewModel>(albumFromDb);
+            AlbumDetailsViewModel albumViewModel = 
+                ModelMapper.ProjectTo<AlbumDetailsViewModel>(albumFromDb);
 
             if (albumFromDb == null)
             {
