@@ -1,41 +1,29 @@
 ﻿namespace SIS.MvcFramework
 {
-    using System.Collections.Generic;
-    using System.IO;
     using System.Runtime.CompilerServices;
 
     using SIS.HTTP.Requests;
     using SIS.MvcFramework.Extensions;
     using SIS.MvcFramework.Identity;
     using SIS.MvcFramework.Result;
+    using SIS.MvcFramework.ViewEngine;
 
     public abstract class Controller
     {
-        protected Dictionary<string, object> viewData;
+        private readonly IViewEngine viewEngine;
 
         protected Controller()
         {
-            this.viewData = new Dictionary<string, object>();
+            this.viewEngine = new SisViewEngine();
         }
 
         // TODO: Refactor this
         public Principal User => 
             this.Request.Session.ContainsParameter("principal")
-            ? (Principal)this.Request.Session.GetParameter("principal")
+            ? (Principal) this.Request.Session.GetParameter("principal")
             : null;
 
         public IHttpRequest Request { get; set; }
-
-        private string ParseTemplate(string viewContent)
-        {
-            foreach (var param in this.viewData)
-            {
-                viewContent = viewContent.Replace($"@Model.{param.Key}",
-                    param.Value.ToString());
-            }
-
-            return viewContent;
-        }
 
         protected bool IsLoggedIn()
         {
@@ -59,16 +47,24 @@
 
         protected ActionResult View([CallerMemberName] string view = null)
         {
-            string controllerName = GetType().Name.Replace("Controller", string.Empty);
+            return this.View<object>(null, view);
+        }
+
+        protected ActionResult View<T>(T model = null, [CallerMemberName] string view = null)
+            where T : class
+        {
+            // TODO: Support for layout
+            string controllerName = this.GetType().Name.Replace("Controller", string.Empty);
             string viewName = view;
 
-            string viewPath = Path.Combine("Views", controllerName, $"{viewName}.html");
-            string viewContent = System.IO.File.ReadAllText(viewPath);
+            string viewContent = System.IO.File.ReadAllText("Views/" + controllerName + "/" + viewName + ".html");
+            viewContent = this.viewEngine.GetHtml(viewContent, model, this.User);
 
-            viewContent = this.ParseTemplate(viewContent);
+            string layoutContent = System.IO.File.ReadAllText("Views/_Layout.html");
+            layoutContent = this.viewEngine.GetHtml(layoutContent, model, this.User);
+            layoutContent = layoutContent.Replace("@RenderBody()", viewContent);
 
-            HtmlResult htmlResult = new HtmlResult(viewContent);
-
+            var htmlResult = new HtmlResult(layoutContent);
             return htmlResult;
         }
 

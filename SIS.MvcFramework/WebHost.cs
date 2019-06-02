@@ -101,9 +101,10 @@
                         return response;
                     });
 
-                    Console.WriteLine(httpMethod + " " + path);
+                    Console.WriteLine($"Registered: {httpMethod.ToString().ToUpper()} {path}");
                 }
             }
+            Console.WriteLine();
         }
     }
 }

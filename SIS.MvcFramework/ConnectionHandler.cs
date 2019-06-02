@@ -150,7 +150,7 @@
 
                 if (httpRequest != null)
                 {
-                    Console.WriteLine($"Processing: {httpRequest.RequestMethod} {httpRequest.Path}...");
+                    Console.WriteLine($"Processing: {httpRequest.RequestMethod.ToString().ToUpper()} {httpRequest.Path}...");
 
                     string sessionId = this.SetRequestSession(httpRequest);
 
