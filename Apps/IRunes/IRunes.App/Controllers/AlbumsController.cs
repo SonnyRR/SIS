@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using IRunes.App.ViewModels;
 using IRunes.Models;
 using IRunes.Services;
@@ -43,8 +44,8 @@ namespace IRunes.App.Controllers
         [HttpPost(ActionName = "Create")]
         public ActionResult CreateConfirm()
         {
-            string name = ((ISet<string>)this.Request.FormData["name"]).FirstOrDefault();
-            string cover = ((ISet<string>)this.Request.FormData["cover"]).FirstOrDefault();
+            string name = HttpUtility.UrlDecode(((ISet<string>)this.Request.FormData["name"]).FirstOrDefault());
+            string cover = HttpUtility.UrlDecode(((ISet<string>)this.Request.FormData["cover"]).FirstOrDefault());
 
             Album album = new Album
             {
