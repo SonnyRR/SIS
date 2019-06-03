@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Text;
 
+    using SIS.Common;
     using SIS.HTTP.Common;
     using SIS.HTTP.Cookies.Contracts;
 
@@ -18,21 +19,21 @@
 
         public void AddCookie(HttpCookie cookie)
         {
-            CoreValidator.ThrowIfNull(cookie, nameof(cookie));
+            cookie.ThrowIfNull(nameof(cookie));
 
             this.cookies.Add(cookie.Key, cookie);
         }
 
         public bool ContainsCookie(string key)
         {
-            CoreValidator.ThrowIfNullOrEmpty(key, nameof(key));
+            key.ThrowIfNull(nameof(key));
 
             return this.cookies.ContainsKey(key);
         }
 
         public HttpCookie GetCookie(string key)
         {
-            CoreValidator.ThrowIfNullOrEmpty(key, nameof(key));
+            key.ThrowIfNull(nameof(key));
 
             return this.cookies[key];
         }

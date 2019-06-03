@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Text;
 
+    using SIS.Common;
     using SIS.HTTP.Common;
 
     public class HttpHeaderCollection : IHttpHeaderCollection
@@ -21,7 +22,7 @@
         /// <param name="header">Header.</param>
         public void AddHeader(HttpHeader header)
         {
-            CoreValidator.ThrowIfNull(header, nameof(header));
+            header.ThrowIfNull(nameof(header));
             this.headers.Add(header.Key, header);
         }
 
@@ -32,7 +33,7 @@
         /// <param name="key">Key.</param>
         public bool ContainsHeader(string key)
         {
-            CoreValidator.ThrowIfNull(key, nameof(key));
+            key.ThrowIfNullOrEmpty(nameof(key));
 
             return this.headers.ContainsKey(key);
         }
@@ -44,7 +45,7 @@
         /// <param name="key">Key.</param>
         public HttpHeader GetHeader(string key)
         {
-            CoreValidator.ThrowIfNull(key, nameof(key));
+            key.ThrowIfNullOrEmpty(nameof(key));
 
             return this.headers
                 .FirstOrDefault(kvp => kvp.Key == key)

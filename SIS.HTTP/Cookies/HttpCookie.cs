@@ -3,6 +3,7 @@
     using System;
     using System.Text;
 
+    using SIS.Common;
     using SIS.HTTP.Common;
  
     public class HttpCookie
@@ -19,9 +20,10 @@
         public HttpCookie(string key, string value, bool isNew,
             int expires = HttpCookiesDefaultExpirationDays, string path = HttpCookieDefaultPath)
         {
-            CoreValidator.ThrowIfNullOrEmpty(key, nameof(key));
-            CoreValidator.ThrowIfNullOrEmpty(value, nameof(value));
-            CoreValidator.ThrowIfNullOrEmpty(path, nameof(path));
+            key.ThrowIfNullOrEmpty(nameof(key));
+            value.ThrowIfNullOrEmpty(nameof(value));
+            path.ThrowIfNullOrEmpty(nameof(path));
+
 
             this.Key = key;
             this.Value = value;

@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Web;
 
+    using SIS.Common;
     using SIS.HTTP.Common;
     using SIS.HTTP.Cookies;
     using SIS.HTTP.Cookies.Contracts;
@@ -17,7 +18,7 @@
     {
         public HttpRequest(string requestAsString)
         {
-            CoreValidator.ThrowIfNullOrEmpty(requestAsString, nameof(requestAsString));
+            requestAsString.ThrowIfNullOrEmpty(nameof(requestAsString));
 
             this.FormData = new Dictionary<string, object>();
             this.QueryData = new Dictionary<string, object>();
@@ -50,7 +51,6 @@
         /// <param name="requestString">Request string.</param>
         private void ParseRequest(string requestString)
         {
-            CoreValidator.ThrowIfNullOrEmpty(requestString, nameof(requestString));
 
             string[] wholeRequest = requestString
                 .Split(GlobalConstants.HttpNewLine, StringSplitOptions.None);
@@ -257,7 +257,7 @@
         /// <param name="formData">Form data.</param>
         private void ParseRequestFormDataParameters(string formData)
         {
-            CoreValidator.ThrowIfNullOrEmpty(formData, nameof(formData));
+            formData.ThrowIfNullOrEmpty(nameof(formData));
 
             var dataPairs = formData
                 .Split('&', StringSplitOptions.RemoveEmptyEntries)

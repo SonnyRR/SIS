@@ -2,6 +2,7 @@
 {
     using System.Text;
 
+    using SIS.Common;
     using SIS.HTTP.Common;
     using SIS.HTTP.Cookies;
     using SIS.HTTP.Cookies.Contracts;
@@ -34,7 +35,7 @@
 
         public void AddCookie(HttpCookie cookie)
         {
-            CoreValidator.ThrowIfNull(cookie, nameof(cookie));
+            cookie.ThrowIfNull(nameof(cookie));
 
             this.Cookies.AddCookie(cookie);
         }
@@ -45,7 +46,7 @@
         /// <param name="header">Header.</param>
         public void AddHeader(HttpHeader header)
         {
-            CoreValidator.ThrowIfNull(header, nameof(header));
+            header.ThrowIfNull(nameof(header));
 
             this.Headers.AddHeader(header);
         }

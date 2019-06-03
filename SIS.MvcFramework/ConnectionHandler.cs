@@ -7,6 +7,7 @@
     using System.Text;
     using System.Threading.Tasks;
 
+    using SIS.Common;
     using SIS.HTTP.Common;
     using SIS.HTTP.Cookies;
     using SIS.HTTP.Enums;
@@ -30,8 +31,8 @@
             IServerRoutingTable serverRoutingTable,
             IHttpSessionStorage httpSessionStorage)
         {
-            CoreValidator.ThrowIfNull(client, nameof(client));
-            CoreValidator.ThrowIfNull(serverRoutingTable, nameof(serverRoutingTable));
+            client.ThrowIfNull(nameof(client));
+            serverRoutingTable.ThrowIfNull(nameof(serverRoutingTable));
            
             this.client = client;
             this.serverRoutingTable = serverRoutingTable;

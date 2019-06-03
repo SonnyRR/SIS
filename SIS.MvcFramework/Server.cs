@@ -5,7 +5,7 @@
     using System.Net.Sockets;
     using System.Threading.Tasks;
 
-    using SIS.HTTP.Common;
+    using SIS.Common;
     using SIS.MvcFramework.Routing;
     using SIS.MvcFramework.Sessions;
 
@@ -25,7 +25,7 @@
 
         public Server(int port, IServerRoutingTable serverRoutingTable, IHttpSessionStorage httpSessionStorage)
         {
-            CoreValidator.ThrowIfNull(serverRoutingTable, nameof(serverRoutingTable));
+            serverRoutingTable.ThrowIfNull(nameof(serverRoutingTable));
 
             this.port = port;
             this.serverRoutingTable = serverRoutingTable;
