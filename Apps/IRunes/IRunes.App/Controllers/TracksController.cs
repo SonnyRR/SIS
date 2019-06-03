@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Web;
+using System.Collections.Generic;
 using System.Linq;
 using IRunes.App.ViewModels;
 using IRunes.Models;
@@ -37,7 +38,7 @@ namespace IRunes.App.Controllers
         {
             string albumId = this.Request.QueryData["albumId"].ToString();
             string name = ((ISet<string>)this.Request.FormData["name"]).FirstOrDefault();
-            string link = ((ISet<string>)this.Request.FormData["link"]).FirstOrDefault();
+            string link = HttpUtility.UrlDecode(((ISet<string>)this.Request.FormData["link"]).FirstOrDefault());
             string price = ((ISet<string>)this.Request.FormData["price"]).FirstOrDefault();
 
             Track trackForDb = new Track
