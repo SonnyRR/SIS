@@ -9,6 +9,7 @@ using SIS.MvcFramework.Attributes;
 using SIS.MvcFramework.Attributes.Security;
 using SIS.MvcFramework.Mapping;
 using SIS.MvcFramework.Result;
+using SIS.HTTP.Headers;
 
 namespace IRunes.App.Controllers
 {
@@ -37,7 +38,7 @@ namespace IRunes.App.Controllers
         public ActionResult CreateConfirm()
         {
             string albumId = this.Request.QueryData["albumId"].ToString();
-            string name = ((ISet<string>)this.Request.FormData["name"]).FirstOrDefault();
+            string name = HttpUtility.UrlDecode(((ISet<string>)this.Request.FormData["name"]).FirstOrDefault());
             string link = HttpUtility.UrlDecode(((ISet<string>)this.Request.FormData["link"]).FirstOrDefault());
             string price = ((ISet<string>)this.Request.FormData["price"]).FirstOrDefault();
 
@@ -72,7 +73,10 @@ namespace IRunes.App.Controllers
             TrackDetailsViewModel trackDetailsViewModel = ModelMapper.ProjectTo<TrackDetailsViewModel>(trackFromDb);
             trackDetailsViewModel.AlbumId = albumId;
 
-            return this.View(trackDetailsViewModel);
+            var view = this.View(trackDetailsViewModel);
+            view.AddHeader(new HttpHeader("X-Frame-Options", "allow-from https://www.youtube.com/"));
+
+            return view;
         }
     }
 }
