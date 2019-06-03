@@ -11,19 +11,21 @@
     using SIS.MvcFramework.Attributes.Security;
     using SIS.MvcFramework.Result;
     using SIS.MvcFramework.Routing;
+    using SIS.MvcFramework.Sessions;
 
     public static class WebHost
     {
         public static void Start(IMvcApplication application)
         {
             IServerRoutingTable serverRoutingTable = new ServerRoutingTable();
+            IHttpSessionStorage httpSessionStorage = new HttpSessionStorage();
 
             AutoRegisterRoutes(application, serverRoutingTable);
 
             application.ConfigureServices();
             application.Configure(serverRoutingTable);
 
-            var server = new Server(8000, serverRoutingTable);
+            var server = new Server(8000, serverRoutingTable, httpSessionStorage);
             server.Run();
         }
 

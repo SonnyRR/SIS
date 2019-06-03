@@ -4,19 +4,19 @@
 
     using SIS.HTTP.Sessions;
 
-    public class HttpSessionStorage
+    public class HttpSessionStorage : IHttpSessionStorage
     {
         public const string SessionCookieKey = "SIS_ID";
 
-        private static readonly ConcurrentDictionary<string, IHttpSession> HttpSessions =
+        private readonly ConcurrentDictionary<string, IHttpSession> HttpSessions =
             new ConcurrentDictionary<string, IHttpSession>();
 
-        public static IHttpSession GetSession(string id)
+        public IHttpSession GetSession(string id)
         {
             return HttpSessions.GetOrAdd(id, _ => new HttpSession(id));
         }
 
-        public static bool ContainsSession(string id)
+        public bool ContainsSession(string id)
         {
             return HttpSessions.ContainsKey(id);
         }

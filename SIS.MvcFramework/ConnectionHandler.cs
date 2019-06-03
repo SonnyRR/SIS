@@ -24,13 +24,18 @@
 
         private readonly IServerRoutingTable serverRoutingTable;
 
-        public ConnectionHandler(Socket client, IServerRoutingTable serverRoutingTable)
+        private readonly IHttpSessionStorage httpSessionStorage;
+
+        public ConnectionHandler(Socket client,
+            IServerRoutingTable serverRoutingTable,
+            IHttpSessionStorage httpSessionStorage)
         {
             CoreValidator.ThrowIfNull(client, nameof(client));
             CoreValidator.ThrowIfNull(serverRoutingTable, nameof(serverRoutingTable));
-
+           
             this.client = client;
             this.serverRoutingTable = serverRoutingTable;
+            this.httpSessionStorage = httpSessionStorage;
         }
 
         private async Task<IHttpRequest> ReadRequestAsync()
@@ -106,9 +111,9 @@
 
                 string sessionId = cookie.Value;
 
-                if (HttpSessionStorage.ContainsSession(sessionId))
+                if (httpSessionStorage.ContainsSession(sessionId))
                 {
-                    httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
+                    httpRequest.Session = httpSessionStorage.GetSession(sessionId);
                 }
             }
 
@@ -116,7 +121,7 @@
             {
                 string sessionId = Guid.NewGuid().ToString();
 
-                httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
+                httpRequest.Session = httpSessionStorage.GetSession(sessionId);
             }
 
             return httpRequest.Session?.Id;
@@ -124,7 +129,7 @@
 
         private void SetResponseSession(IHttpResponse httpResponse, string sessionId)
         {
-            IHttpSession responseSession = HttpSessionStorage.GetSession(sessionId);
+            IHttpSession responseSession = httpSessionStorage.GetSession(sessionId);
 
             if (responseSession.IsNew)
             {
