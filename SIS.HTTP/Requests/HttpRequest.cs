@@ -32,9 +32,9 @@
 
         public string Url { get; private set; }
 
-        public Dictionary<string, object> FormData { get; }
+        public Dictionary<string, ISet<string>> FormData { get; }
 
-        public Dictionary<string, object> QueryData { get; }
+        public Dictionary<string, ISet<string>> QueryData { get; }
 
         public HttpHeaderCollection Headers { get; }
 
@@ -218,34 +218,35 @@
         /// <exception cref="BadRequestException">Throws a BadRequestException if the Query string is invalid.</exception>
         private void ParseQueryParameters()
         {
-            // It's better to use HttpUtility.ParseQueryString() but the point is to write these methods by hand.
+            //FIXME
             var splittedUrlTokens = this.Url
                 .Split(new[] { '?' }, StringSplitOptions.RemoveEmptyEntries);
 
             if (splittedUrlTokens.Length > 1)
             {
-                var queryString = splittedUrlTokens[1];
+                var queryData = splittedUrlTokens[1];
 
-                var isValid = this.IsRequestQueryStringValid(queryString);
+                var isValid = this.IsRequestQueryStringValid(queryData);
 
                 if (!isValid)
                     throw new BadRequestException();
 
-                var queryPairs = queryString
-                    .Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                var queryPairs = queryData
+                .Split('&', StringSplitOptions.RemoveEmptyEntries)
+                .Select(kvp => kvp.Split('=', 2, StringSplitOptions.RemoveEmptyEntries))
+                .ToList();
 
-                foreach (var pair in queryPairs)
+                foreach (var kvp in queryPairs)
                 {
-                    var pairTokens = pair.Split('=', StringSplitOptions.RemoveEmptyEntries);
+                    var key = kvp[0];
+                    var value = kvp[1];
 
-                    var key = pairTokens[0];
-                    var value = pairTokens[1];
+                    if (!this.FormData.ContainsKey(key))
+                    {
+                        this.FormData.Add(key, new HashSet<string>());
+                    }
 
-                    // FIXME
-                    // What happens when we need to store the same key with multiple values
-                    // like in a multiple select or checkboxes ?
-                    if (!this.QueryData.ContainsKey(key))
-                        this.QueryData[key] = value;
+                    this.FormData[key].Add(value);
                 }
             }
         }
@@ -274,9 +275,7 @@
                     this.FormData.Add(key, new HashSet<string>());
                 }
 
-                // FIXME
-                // need refactoring
-                ((ISet<string>)this.FormData[key]).Add(value);
+                this.FormData[key].Add(value);
             }
         }
 
