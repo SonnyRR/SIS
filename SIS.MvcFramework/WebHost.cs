@@ -1,14 +1,16 @@
 ﻿namespace SIS.MvcFramework
 {
-    using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
 
     using SIS.HTTP.Enums;
+    using SIS.HTTP.Requests;
     using SIS.HTTP.Responses;
     using SIS.MvcFramework.Attributes;
     using SIS.MvcFramework.Attributes.Action;
     using SIS.MvcFramework.Attributes.Security;
+    using SIS.MvcFramework.DependencyContainer;
     using SIS.MvcFramework.Result;
     using SIS.MvcFramework.Routing;
     using SIS.MvcFramework.Sessions;
@@ -19,10 +21,11 @@
         {
             IServerRoutingTable serverRoutingTable = new ServerRoutingTable();
             IHttpSessionStorage httpSessionStorage = new HttpSessionStorage();
+            IServiceProvider serviceProvider = new ServiceProvider();
 
             AutoRegisterRoutes(application, serverRoutingTable);
 
-            application.ConfigureServices();
+            application.ConfigureServices(serviceProvider);
             application.Configure(serverRoutingTable);
 
             var server = new Server(8000, serverRoutingTable, httpSessionStorage);
@@ -81,7 +84,7 @@
                     serverRoutingTable.Add(httpMethod, path, request =>
                     {
                         // request => new UsersController().Login(request)
-                        var controllerInstance = Activator.CreateInstance(controller);
+                        var controllerInstance = System.Activator.CreateInstance(controller);
                         ((Controller)controllerInstance).Request = request;
 
                         // Security Authorization - TODO: Refactor this
@@ -103,10 +106,36 @@
                         return response;
                     });
 
-                    Console.WriteLine($"Registered: {httpMethod.ToString().ToUpper()} {path}");
+                    System.Console.WriteLine($"Registered: {httpMethod.ToString().ToUpper()} {path}");
                 }
             }
-            Console.WriteLine();
+            System.Console.WriteLine();
+        }
+
+        private static ISet<string> TryGetHttpParameter(IHttpRequest request, string parameterName)
+        {
+            parameterName = parameterName.ToLower();
+
+            ISet<string> httpDataValue = null;
+
+            if (request.QueryData.Any(x => x.Key.ToLower() == parameterName))
+            {
+                httpDataValue = request
+                    .QueryData
+                    .FirstOrDefault(
+                        x => x.Key.ToLower() == parameterName)
+                    .Value;
+            }
+            else if (request.FormData.Any(x => x.Key.ToLower() == parameterName))
+            {
+                httpDataValue = request
+                    .FormData
+                    .FirstOrDefault(
+                        x => x.Key.ToLower() == parameterName)
+                    .Value;
+            }
+
+            return httpDataValue;
         }
     }
 }
