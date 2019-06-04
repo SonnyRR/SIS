@@ -241,12 +241,12 @@
                     var key = kvp[0];
                     var value = kvp[1];
 
-                    if (!this.FormData.ContainsKey(key))
+                    if (!this.QueryData.ContainsKey(key))
                     {
-                        this.FormData.Add(key, new HashSet<string>());
+                        this.QueryData.Add(key, new HashSet<string>());
                     }
 
-                    this.FormData[key].Add(value);
+                    this.QueryData[key].Add(value);
                 }
             }
         }
