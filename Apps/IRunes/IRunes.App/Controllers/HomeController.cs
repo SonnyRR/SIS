@@ -2,6 +2,7 @@
 using SIS.MvcFramework;
 using SIS.MvcFramework.Attributes;
 using SIS.MvcFramework.Result;
+using System.Collections.Generic;
 
 namespace IRunes.App.Controllers
 {
@@ -20,6 +21,11 @@ namespace IRunes.App.Controllers
                 return this.View(new UserHomeViewModel{ Username = this.User.Username }, "Home");
             }
 
+            return this.View();
+        }
+
+        public ActionResult Test(IEnumerable<string> list)
+        {
             return this.View();
         }
     }

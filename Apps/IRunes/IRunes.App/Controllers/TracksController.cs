@@ -1,15 +1,15 @@
-﻿using System.Web;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using IRunes.App.ViewModels;
+using IRunes.App.ViewModels.Tracks;
 using IRunes.Models;
 using IRunes.Services;
+using Microsoft.Extensions.Logging;
 using SIS.MvcFramework;
 using SIS.MvcFramework.Attributes;
 using SIS.MvcFramework.Attributes.Security;
 using SIS.MvcFramework.Mapping;
 using SIS.MvcFramework.Result;
-using SIS.HTTP.Headers;
 
 namespace IRunes.App.Controllers
 {
@@ -19,50 +19,40 @@ namespace IRunes.App.Controllers
 
         private readonly IAlbumService albumService;
 
-        public TracksController()
+        public TracksController(ITrackService trackService, IAlbumService albumService)
         {
-            this.trackService = new TrackService();
-            this.albumService = new AlbumService();
+            this.trackService = trackService;
+            this.albumService = albumService;
         }
 
         [Authorize]
-        public ActionResult Create()
+        public ActionResult Create(string albumId)
         {
-            string albumId = this.Request.QueryData["albumId"].ToString();
-
             return this.View(new TrackCreateViewModel{ AlbumId = albumId });
         }
 
         [Authorize]
-        [HttpPost(ActionName = "Create")]
-        public ActionResult CreateConfirm()
+        [HttpPost]
+        public ActionResult Create(CreateInputModel model)
         {
-            string albumId = this.Request.QueryData["albumId"].ToString();
-            string name = HttpUtility.UrlDecode(((ISet<string>)this.Request.FormData["name"]).FirstOrDefault());
-            string link = HttpUtility.UrlDecode(((ISet<string>)this.Request.FormData["link"]).FirstOrDefault());
-            string price = ((ISet<string>)this.Request.FormData["price"]).FirstOrDefault();
-
             Track trackForDb = new Track
             {
-                Name = name,
-                Link = link,
-                Price = decimal.Parse(price)
+                Name = model.Name,
+                Link = model.Link,
+                Price = model.Price,
             };
 
-            if (!this.albumService.AddTrackToAlbum(albumId, trackForDb))
+            if (!this.albumService.AddTrackToAlbum(model.AlbumId, trackForDb))
             {
                 return this.Redirect("/Albums/All");
             }
 
-            return this.Redirect($"/Albums/Details?id={albumId}");
+            return this.Redirect($"/Albums/Details?id={model.AlbumId}");
         }
 
         [Authorize]
-        public ActionResult Details()
+        public ActionResult Details(string albumId, string trackId)
         {
-            string albumId = this.Request.QueryData["albumId"].ToString();
-            string trackId = this.Request.QueryData["trackId"].ToString();
-
             Track trackFromDb = this.trackService.GetTrackById(trackId);
 
             if (trackFromDb == null)
@@ -73,10 +63,7 @@ namespace IRunes.App.Controllers
             TrackDetailsViewModel trackDetailsViewModel = ModelMapper.ProjectTo<TrackDetailsViewModel>(trackFromDb);
             trackDetailsViewModel.AlbumId = albumId;
 
-            var view = this.View(trackDetailsViewModel);
-            view.AddHeader(new HttpHeader("X-Frame-Options", "allow-from https://www.youtube.com/"));
-
-            return view;
+            return this.View(trackDetailsViewModel);
         }
     }
 }
