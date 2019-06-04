@@ -23,7 +23,7 @@
             IHttpSessionStorage httpSessionStorage = new HttpSessionStorage();
             IServiceProvider serviceProvider = new ServiceProvider();
 
-            AutoRegisterRoutes(application, serverRoutingTable);
+            AutoRegisterRoutes(application, serverRoutingTable, serviceProvider);
 
             application.ConfigureServices(serviceProvider);
             application.Configure(serverRoutingTable);
@@ -33,34 +33,30 @@
         }
 
         private static void AutoRegisterRoutes(
-            IMvcApplication application, IServerRoutingTable serverRoutingTable)
+            IMvcApplication application,
+            IServerRoutingTable serverRoutingTable,
+            IServiceProvider serviceProvider)
         {
-            var controllers = application
-                .GetType()
-                .Assembly
-                .GetTypes()
+            var controllers = application.GetType().Assembly.GetTypes()
                 .Where(type => type.IsClass 
                     && !type.IsAbstract
-                    && typeof(Controller).IsAssignableFrom(type))
-                .ToList();
+                    && typeof(Controller).IsAssignableFrom(type));
 
-            foreach (var controller in controllers)
+            foreach (var controllerType in controllers)
             {
-                var actions = controller
+                var actions = controllerType
                     .GetMethods(BindingFlags.DeclaredOnly
                     | BindingFlags.Public
                     | BindingFlags.Instance)
-                    .Where(x => !x.IsSpecialName && x.DeclaringType == controller)
+                    .Where(x => !x.IsSpecialName && x.DeclaringType == controllerType)
                     .Where(x => x.GetCustomAttributes()
                         .All(a => a.GetType() != typeof(NonActionAttribute)));
-                
-                foreach (var actionMethod in actions)
-                {
-                    var path = $"/{controller.Name.Replace("Controller", string.Empty)}/{actionMethod.Name}";
 
-                    var attribute = actionMethod.GetCustomAttributes()
-                        .Where(x => x
-                            .GetType()
+                foreach (var action in actions)
+                {
+                    var path = $"/{controllerType.Name.Replace("Controller", string.Empty)}/{action.Name}";
+                    var attribute = action.GetCustomAttributes()
+                        .Where(x => x.GetType()
                             .IsSubclassOf(typeof(BaseHttpAttribute)))
                         .LastOrDefault() as BaseHttpAttribute;
 
@@ -78,38 +74,86 @@
 
                     if (attribute?.ActionName != null)
                     {
-                        path = $"/{controller.Name.Replace("Controller", string.Empty)}/{attribute.ActionName}";
+                        path = $"/{controllerType.Name.Replace("Controller", string.Empty)}/{attribute.ActionName}";
                     }
 
-                    serverRoutingTable.Add(httpMethod, path, request =>
-                    {
-                        // request => new UsersController().Login(request)
-                        var controllerInstance = System.Activator.CreateInstance(controller);
-                        ((Controller)controllerInstance).Request = request;
+                    serverRoutingTable.Add(httpMethod, path,
+                        (request) => ProcessRequest(serviceProvider, controllerType, action, request));
 
-                        // Security Authorization - TODO: Refactor this
-                        var controllerPrincipal = ((Controller)controllerInstance).User;
-                        var authorizeAttribute = actionMethod
-                            .GetCustomAttributes()
-                            .LastOrDefault(a => a.GetType() == typeof(AuthorizeAttribute))
-                            as AuthorizeAttribute;
-
-                        if (authorizeAttribute != null && !authorizeAttribute.IsInAuthority(controllerPrincipal))
-                        {
-                            // TODO: Redirect to configured URL
-                            return new HttpResponse(HttpResponseStatusCode.Forbidden);
-                        }
-
-                        // This calls the Invoke() on the current controller method(aciton) to return
-                        // as the second param of Func<IHttpRequest, IHttpResponse>.
-                        var response = actionMethod.Invoke(controllerInstance, new object[0]) as ActionResult;
-                        return response;
-                    });
-
-                    System.Console.WriteLine($"Registered: {httpMethod.ToString().ToUpper()} {path}");
+                    System.Console.WriteLine(httpMethod + " " + path);
                 }
             }
-            System.Console.WriteLine();
+        }
+
+        private static IHttpResponse ProcessRequest(
+            IServiceProvider serviceProvider,
+            System.Type controllerType,
+            MethodInfo action,
+            IHttpRequest request)
+        {
+            var controllerInstance = serviceProvider
+                .CreateInstance(controllerType) as Controller;
+
+            controllerInstance.Request = request;
+
+            // Security Authorization - TODO: Refactor this
+            var controllerPrincipal = controllerInstance.User;
+
+            var authorizeAttribute = action.GetCustomAttributes()
+                .LastOrDefault(
+                a => a.GetType() == typeof(AuthorizeAttribute))
+                as AuthorizeAttribute;
+
+            if (authorizeAttribute != null 
+                && !authorizeAttribute.IsInAuthority(controllerPrincipal))
+            {
+                // TODO: Redirect to configured URL
+                return new HttpResponse(HttpResponseStatusCode.Forbidden);
+            }
+
+            var parameters = action.GetParameters();
+            var parameterValues = new List<object>();
+
+            foreach (var parameter in parameters)
+            {
+                ISet<string> httpDataValue = TryGetHttpParameter(request, parameter.Name);
+                /* TODO: if (parameter.ParameterType.GetInterfaces().Any(
+                    i => i.IsGenericType &&
+                    i.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
+                {
+                    var collection = httpDataValue.Select(x => System.Convert.ChangeType(x,
+                        parameter.ParameterType.GenericTypeArguments.First()));
+                    parameterValues.Add(collection);
+                    continue;
+                } */
+
+                try
+                {
+                    string httpStringValue = httpDataValue.FirstOrDefault();
+                    var parameterValue = System.Convert.ChangeType(httpStringValue, parameter.ParameterType);
+                    parameterValues.Add(parameterValue);
+                }
+                catch
+                {
+                    var paramaterValue = System.Activator.CreateInstance(parameter.ParameterType);
+                    var properties = parameter.ParameterType.GetProperties();
+                    foreach (var property in properties)
+                    {
+                        ISet<string> propertyHttpDataValue = TryGetHttpParameter(request, property.Name);
+                        var firstValue = propertyHttpDataValue.FirstOrDefault();
+                        var propertyValue = System.Convert.ChangeType(firstValue, property.PropertyType);
+                        property.SetMethod.Invoke(paramaterValue, new object[] { propertyValue });
+                    }
+
+                    parameterValues.Add(paramaterValue);
+                }
+            }
+
+            var response = action
+                .Invoke(controllerInstance, parameterValues.ToArray())
+                as ActionResult;
+
+            return response;
         }
 
         private static ISet<string> TryGetHttpParameter(IHttpRequest request, string parameterName)
