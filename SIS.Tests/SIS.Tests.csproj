@@ -17,10 +17,30 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="HTTP\" />
-    <Folder Include="SIS.MvcFramework.Tests\" />
+    <Folder Include="MvcFramework\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIS.MvcFramework\SIS.MvcFramework.csproj" />
     <ProjectReference Include="..\SIS.HTTP\SIS.HTTP.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="MvcFramework\ViewTests\TestWithoutCSharpCode.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="MvcFramework\ViewTests\TestWithoutCSharpCode.Result.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="MvcFramework\ViewTests\UseForForeachAndIf.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="MvcFramework\ViewTests\UseModelData.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="MvcFramework\ViewTests\UseModelData.Result.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="MvcFramework\ViewTests\UseForForeachAndIf.Result.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
