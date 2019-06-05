@@ -80,7 +80,7 @@
                     serverRoutingTable.Add(httpMethod, path,
                         (request) => ProcessRequest(serviceProvider, controllerType, action, request));
 
-                    System.Console.WriteLine(httpMethod + " " + path);
+                    System.Console.WriteLine($"Registered: {httpMethod.ToString().ToUpper()} {path}");
                 }
             }
         }
