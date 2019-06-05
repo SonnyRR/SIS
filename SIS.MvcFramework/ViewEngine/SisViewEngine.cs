@@ -4,6 +4,7 @@
     using System.Collections;
     using System.IO;
     using System.Linq;
+    using System.Net;
     using System.Reflection;
     using System.Text;
     using System.Text.RegularExpressions;
@@ -17,6 +18,8 @@
 #pragma warning disable RECS0060 // Warns when a culture-aware 'IndexOf' call is used by default.
     public class SisViewEngine : IViewEngine
     {
+        public object WebUtilitycode { get; private set; }
+
         private string GetModelType<T>(T model)
         {
             if (model is IEnumerable)
@@ -63,12 +66,10 @@ namespace AppViewCodeNamespace
         private string GetCSharpCode(string viewContent)
         {
             // TODO: { var a = "Niki"; }
-            var lines = viewContent
-                .Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            var lines = viewContent.Split(new string[] { "\r\n", "\n\r", "\n" }, StringSplitOptions.None);
             var csharpCode = new StringBuilder();
             var supportedOperators = new[] { "for", "if", "else" };
-            var csharpCodeRegex = new Regex(@"[^\s<""]+", RegexOptions.Compiled);
-
+            var csharpCodeRegex = new Regex(@"[^\s<""\&]+", RegexOptions.Compiled);
             foreach (var line in lines)
             {
                 if (line.TrimStart().StartsWith("{") || line.TrimStart().StartsWith("}"))
@@ -86,12 +87,7 @@ namespace AppViewCodeNamespace
                 else
                 {
                     // HTML
-                    if (!line.Contains("@"))
-                    {
-                        var csharpLine = $"html.AppendLine(@\"{line.Replace("\"", "\"\"")}\");";
-                        csharpCode.AppendLine(csharpLine);
-                    }
-                    else if (line.Contains("@RenderBody()"))
+                    if (line.Contains("@RenderBody()"))
                     {
                         var csharpLine = $"html.AppendLine(@\"{line}\");";
                         csharpCode.AppendLine(csharpLine);
@@ -100,7 +96,6 @@ namespace AppViewCodeNamespace
                     {
                         var csharpStringToAppend = "html.AppendLine(@\"";
                         var restOfLine = line;
-
                         while (restOfLine.Contains("@"))
                         {
                             var atSignLocation = restOfLine.IndexOf("@");
@@ -140,8 +135,6 @@ namespace AppViewCodeNamespace
             return csharpCode.ToString();
         }
 
-#pragma warning restore RECS0063 // Warns when a culture-aware 'StartsWith' call is used by default.
-#pragma warning restore RECS0060 // Warns when a culture-aware 'IndexOf' call is used by default.
         private IView CompileAndInstance(string code, Assembly modelAssembly)
         {
             modelAssembly = modelAssembly ?? Assembly.GetEntryAssembly();
@@ -154,10 +147,7 @@ namespace AppViewCodeNamespace
                 .AddReferences(MetadataReference.CreateFromFile(Assembly.GetEntryAssembly().Location))
                 .AddReferences(MetadataReference.CreateFromFile(modelAssembly.Location));
 
-            var netStandardAssembly = Assembly
-                .Load(new AssemblyName("netstandard"))
-                .GetReferencedAssemblies();
-
+            var netStandardAssembly = Assembly.Load(new AssemblyName("netstandard")).GetReferencedAssemblies();
             foreach (var assembly in netStandardAssembly)
             {
                 compilation = compilation.AddReferences(
@@ -171,12 +161,16 @@ namespace AppViewCodeNamespace
                 var compilationResult = compilation.Emit(memoryStream);
                 if (!compilationResult.Success)
                 {
-                    foreach (var error in compilationResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error))
+                    var errors = compilationResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error);
+                    var errorsHtml = new StringBuilder();
+                    errorsHtml.AppendLine($"<h1>{errors.Count()} errors:</h1>");
+                    foreach (var error in errors)
                     {
-                        Console.WriteLine(error.GetMessage());
+                        errorsHtml.AppendLine($"<div>{error.Location} => {error.GetMessage()}</div>");
                     }
 
-                    return null;
+                    errorsHtml.AppendLine($"<pre>{WebUtility.HtmlEncode(code)}</pre>");
+                    return new ErrorView(errorsHtml.ToString());
                 }
 
                 memoryStream.Seek(0, SeekOrigin.Begin);
@@ -184,7 +178,6 @@ namespace AppViewCodeNamespace
                 var assembly = Assembly.Load(assemblyBytes);
 
                 var type = assembly.GetType("AppViewCodeNamespace.AppViewCode");
-
                 if (type == null)
                 {
                     Console.WriteLine("AppViewCode not found.");
@@ -196,4 +189,6 @@ namespace AppViewCodeNamespace
             }
         }
     }
+#pragma warning restore RECS0063 // Warns when a culture-aware 'StartsWith' call is used by default.
+#pragma warning restore RECS0060 // Warns when a culture-aware 'IndexOf' call is used by default.
 }
