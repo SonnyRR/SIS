@@ -14,8 +14,9 @@
 
     using SIS.MvcFramework.Identity;
 
-#pragma warning disable RECS0063 // Warns when a culture-aware 'StartsWith' call is used by default.
 #pragma warning disable RECS0060 // Warns when a culture-aware 'IndexOf' call is used by default.
+#pragma warning disable RECS0063 // Warns when a culture-aware 'StartsWith' call is used by default.
+#pragma warning disable RECS0017 // Possible compare of value type with 'null'
     public class SisViewEngine : IViewEngine
     {
         public object WebUtilitycode { get; private set; }
@@ -34,6 +35,7 @@
         {
             string csharpHtmlCode = this.GetCSharpCode(viewContent);
             string code = $@"
+
 using System;
 using System.Net;
 using System.Linq;
@@ -52,12 +54,14 @@ namespace AppViewCodeNamespace
 
 	        var html = new StringBuilder();
 
-            {csharpHtmlCode}
+            
+{csharpHtmlCode}
             
 	        return html.ToString();
         }}
     }}
 }}";
+#pragma warning restore RECS0017 // Possible compare of value type with 'null'
             var view = this.CompileAndInstance(code, model?.GetType().Assembly);
             var htmlResult = view?.GetHtml(model, user);
             return htmlResult;
@@ -70,32 +74,60 @@ namespace AppViewCodeNamespace
             var csharpCode = new StringBuilder();
             var supportedOperators = new[] { "for", "if", "else" };
             var csharpCodeRegex = new Regex(@"[^\s<""\&]+", RegexOptions.Compiled);
+            var csharpCodeDepth = 0; // If > 0, Inside CSharp Syntax
+
             foreach (var line in lines)
             {
-                if (line.TrimStart().StartsWith("{") || line.TrimStart().StartsWith("}"))
+                string currentLine = line;
+
+                if (currentLine.TrimStart().StartsWith("@{"))
+                {
+                    csharpCodeDepth++;
+                }
+                else if (currentLine.TrimStart().StartsWith("{") || currentLine.TrimStart().StartsWith("}"))
                 {
                     // { / }
-                    csharpCode.AppendLine(line);
+                    if (csharpCodeDepth > 0)
+                    {
+                        if (currentLine.TrimStart().StartsWith("{"))
+                        {
+                            csharpCodeDepth++;
+                        }
+                        else if (currentLine.TrimStart().StartsWith("}"))
+                        {
+                            if ((--csharpCodeDepth) == 0)
+                            {
+                                continue;
+                            }
+                        }
+                    }
+
+                    csharpCode.AppendLine(currentLine);
                 }
-                else if (supportedOperators.Any(x => line.TrimStart().StartsWith("@" + x)))
+                else if (csharpCodeDepth > 0)
+                {
+                    csharpCode.AppendLine(currentLine);
+                    continue;
+                }
+                else if (supportedOperators.Any(x => currentLine.TrimStart().StartsWith("@" + x)))
                 {
                     // @C#
-                    var atSignLocation = line.IndexOf("@");
-                    var csharpLine = line.Remove(atSignLocation, 1);
+                    var atSignLocation = currentLine.IndexOf("@");
+                    var csharpLine = currentLine.Remove(atSignLocation, 1);
                     csharpCode.AppendLine(csharpLine);
                 }
                 else
                 {
                     // HTML
-                    if (line.Contains("@RenderBody()"))
+                    if (currentLine.Contains("@RenderBody()"))
                     {
-                        var csharpLine = $"html.AppendLine(@\"{line}\");";
+                        var csharpLine = $"html.AppendLine(@\"{currentLine}\");";
                         csharpCode.AppendLine(csharpLine);
                     }
                     else
                     {
                         var csharpStringToAppend = "html.AppendLine(@\"";
-                        var restOfLine = line;
+                        var restOfLine = currentLine;
                         while (restOfLine.Contains("@"))
                         {
                             var atSignLocation = restOfLine.IndexOf("@");
@@ -145,6 +177,7 @@ namespace AppViewCodeNamespace
                 .AddReferences(MetadataReference.CreateFromFile(typeof(Object).Assembly.Location))
                 .AddReferences(MetadataReference.CreateFromFile(typeof(IView).Assembly.Location))
                 .AddReferences(MetadataReference.CreateFromFile(Assembly.GetEntryAssembly().Location))
+                .AddReferences(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("netstandard")).Location))
                 .AddReferences(MetadataReference.CreateFromFile(modelAssembly.Location));
 
             var netStandardAssembly = Assembly.Load(new AssemblyName("netstandard")).GetReferencedAssemblies();
@@ -189,6 +222,6 @@ namespace AppViewCodeNamespace
             }
         }
     }
-#pragma warning restore RECS0063 // Warns when a culture-aware 'StartsWith' call is used by default.
 #pragma warning restore RECS0060 // Warns when a culture-aware 'IndexOf' call is used by default.
+#pragma warning restore RECS0063 // Warns when a culture-aware 'StartsWith' call is used by default.
 }
