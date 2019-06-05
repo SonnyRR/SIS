@@ -83,6 +83,8 @@
                     System.Console.WriteLine($"Registered: {httpMethod.ToString().ToUpper()} {path}");
                 }
             }
+
+            System.Console.WriteLine();
         }
 
         private static IHttpResponse ProcessRequest(
