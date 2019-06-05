@@ -246,7 +246,7 @@
                         this.QueryData.Add(key, new HashSet<string>());
                     }
 
-                    this.QueryData[key].Add(value);
+                    this.QueryData[key].Add(HttpUtility.UrlDecode(value));
                 }
             }
         }
@@ -275,7 +275,7 @@
                     this.FormData.Add(key, new HashSet<string>());
                 }
 
-                this.FormData[key].Add(value);
+                this.FormData[key].Add(HttpUtility.UrlDecode(value));
             }
         }
 
