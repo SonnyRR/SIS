@@ -17,10 +17,8 @@
             this.viewEngine = new SisViewEngine();
         }
 
-        // TODO: Refactor this
-        public Principal User => 
-            this.Request.Session.ContainsParameter("principal")
-            ? (Principal) this.Request.Session.GetParameter("principal")
+        public Principal User => this.Request.Session.ContainsParameter("principal")
+            ? (Principal)this.Request.Session.GetParameter("principal")
             : null;
 
         public IHttpRequest Request { get; set; }
@@ -53,11 +51,13 @@
         protected ActionResult View<T>(T model = null, [CallerMemberName] string view = null)
             where T : class
         {
-            // TODO: Support for layout
+
             string controllerName = this.GetType().Name.Replace("Controller", string.Empty);
             string viewName = view;
 
-            string viewContent = System.IO.File.ReadAllText("Views/" + controllerName + "/" + viewName + ".html");
+            var viewPath = System.IO.Path.Combine("Views", $"{controllerName}", $"{viewName}.html");
+            string viewContent = System.IO.File.ReadAllText(viewPath);
+
             viewContent = this.viewEngine.GetHtml(viewContent, model, this.User);
 
             string layoutContent = System.IO.File.ReadAllText("Views/_Layout.html");
