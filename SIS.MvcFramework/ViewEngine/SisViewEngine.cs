@@ -13,6 +13,8 @@
 
     using SIS.MvcFramework.Identity;
 
+#pragma warning disable RECS0063 // Warns when a culture-aware 'StartsWith' call is used by default.
+#pragma warning disable RECS0060 // Warns when a culture-aware 'IndexOf' call is used by default.
     public class SisViewEngine : IViewEngine
     {
         private string GetModelType<T>(T model)
@@ -138,6 +140,8 @@ namespace AppViewCodeNamespace
             return csharpCode.ToString();
         }
 
+#pragma warning restore RECS0063 // Warns when a culture-aware 'StartsWith' call is used by default.
+#pragma warning restore RECS0060 // Warns when a culture-aware 'IndexOf' call is used by default.
         private IView CompileAndInstance(string code, Assembly modelAssembly)
         {
             modelAssembly = modelAssembly ?? Assembly.GetEntryAssembly();
