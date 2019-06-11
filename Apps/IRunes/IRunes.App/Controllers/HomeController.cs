@@ -1,5 +1,4 @@
-﻿using IRunes.App.ViewModels;
-using SIS.MvcFramework;
+﻿using SIS.MvcFramework;
 using SIS.MvcFramework.Attributes;
 using SIS.MvcFramework.Result;
 using System.Collections.Generic;
@@ -9,17 +8,17 @@ namespace IRunes.App.Controllers
     public class HomeController : Controller
     {
         [HttpGet(Url = "/")]
-        public ActionResult IndexSlash()
+        public IActionResult IndexSlash()
         {
-            return Index();
+            return this.Index();
         }
 
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return this.View();
         }
 
-        public ActionResult Test(IEnumerable<string> list)
+        public IActionResult Test(IEnumerable<string> list)
         {
             return this.View();
         }

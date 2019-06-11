@@ -1,14 +1,13 @@
-﻿namespace SIS.MvcFramework
+﻿using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading.Tasks;
+using SIS.Common;
+using SIS.MvcFramework.Routing;
+using SIS.MvcFramework.Sessions;
+
+namespace SIS.MvcFramework
 {
-    using System;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Threading.Tasks;
-
-    using SIS.Common;
-    using SIS.MvcFramework.Routing;
-    using SIS.MvcFramework.Sessions;
-
     public class Server
     {
         private const string LocalHostIpAddress = "127.0.0.1";
@@ -17,15 +16,16 @@
 
         private readonly TcpListener tcpListener;
 
-        private IServerRoutingTable serverRoutingTable;
+        private readonly IServerRoutingTable serverRoutingTable;
 
-        private IHttpSessionStorage httpSessionStorage;
+        private readonly IHttpSessionStorage httpSessionStorage;
 
         private bool isRunning;
 
         public Server(int port, IServerRoutingTable serverRoutingTable, IHttpSessionStorage httpSessionStorage)
         {
             serverRoutingTable.ThrowIfNull(nameof(serverRoutingTable));
+            httpSessionStorage.ThrowIfNull(nameof(httpSessionStorage));
 
             this.port = port;
             this.serverRoutingTable = serverRoutingTable;

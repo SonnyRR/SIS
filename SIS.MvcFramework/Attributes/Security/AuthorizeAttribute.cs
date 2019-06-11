@@ -1,17 +1,16 @@
-﻿namespace SIS.MvcFramework.Attributes.Security
+﻿using System;
+using SIS.MvcFramework.Identity;
+
+namespace SIS.MvcFramework.Attributes.Security
 {
-    using System;
-
-    using SIS.MvcFramework.Identity;
-
     public class AuthorizeAttribute : Attribute
     {
-        private readonly string authority;
-
         public AuthorizeAttribute(string authority = "authorized")
         {
             this.authority = authority;
         }
+
+        private readonly string authority;
 
         private bool IsLoggedIn(Principal principal)
         {

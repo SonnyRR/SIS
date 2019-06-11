@@ -1,12 +1,13 @@
-﻿namespace SIS.MvcFramework
-{
-    using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
+using SIS.HTTP.Requests;
+using SIS.MvcFramework.Extensions;
+using SIS.MvcFramework.Identity;
+using SIS.MvcFramework.Result;
+using SIS.MvcFramework.ViewEngine;
 
-    using SIS.HTTP.Requests;
-    using SIS.MvcFramework.Extensions;
-    using SIS.MvcFramework.Identity;
-    using SIS.MvcFramework.Result;
-    using SIS.MvcFramework.ViewEngine;
+namespace SIS.MvcFramework
+{
+    using Validation;
 
     public abstract class Controller
     {
@@ -15,13 +16,18 @@
         protected Controller()
         {
             this.viewEngine = new SisViewEngine();
+            this.ModelState = new ModelStateDictionary();
         }
 
-        public Principal User => this.Request.Session.ContainsParameter("principal")
-            ? (Principal)this.Request.Session.GetParameter("principal")
+        // TODO: Refactor this
+        public Principal User => 
+            this.Request.Session.ContainsParameter("principal")
+            ? (Principal) this.Request.Session.GetParameter("principal")
             : null;
 
         public IHttpRequest Request { get; set; }
+
+        public ModelStateDictionary ModelState { get; set; }
 
         protected bool IsLoggedIn()
         {
@@ -51,17 +57,15 @@
         protected ActionResult View<T>(T model = null, [CallerMemberName] string view = null)
             where T : class
         {
-
+            // TODO: Support for layout
             string controllerName = this.GetType().Name.Replace("Controller", string.Empty);
             string viewName = view;
 
-            var viewPath = System.IO.Path.Combine("Views", $"{controllerName}", $"{viewName}.html");
-            string viewContent = System.IO.File.ReadAllText(viewPath);
-
-            viewContent = this.viewEngine.GetHtml(viewContent, model, this.User);
+            string viewContent = System.IO.File.ReadAllText("Views/" + controllerName + "/" + viewName + ".html");
+            viewContent = this.viewEngine.GetHtml(viewContent, model,this.ModelState, this.User);
 
             string layoutContent = System.IO.File.ReadAllText("Views/_Layout.html");
-            layoutContent = this.viewEngine.GetHtml(layoutContent, model, this.User);
+            layoutContent = this.viewEngine.GetHtml(layoutContent, model,this.ModelState, this.User);
             layoutContent = layoutContent.Replace("@RenderBody()", viewContent);
 
             var htmlResult = new HtmlResult(layoutContent);

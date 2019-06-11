@@ -3,7 +3,6 @@ using System.Linq;
 using IRunes.Data;
 using IRunes.Models;
 using Microsoft.EntityFrameworkCore;
-using Remotion.Linq.Parsing.Structure.IntermediateModel;
 
 namespace IRunes.Services
 {
@@ -11,9 +10,9 @@ namespace IRunes.Services
     {
         private readonly RunesDbContext context;
 
-        public AlbumService()
+        public AlbumService(RunesDbContext runesDbContext)
         {
-            this.context = new RunesDbContext();
+            this.context = runesDbContext;
         }
 
         public Album CreateAlbum(Album album)

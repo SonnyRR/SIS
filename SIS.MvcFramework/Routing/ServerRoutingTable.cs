@@ -1,14 +1,13 @@
-﻿namespace SIS.MvcFramework.Routing
+﻿using System;
+using System.Collections.Generic;
+using SIS.Common;
+using SIS.HTTP.Common;
+using SIS.HTTP.Enums;
+using SIS.HTTP.Requests;
+using SIS.HTTP.Responses;
+
+namespace SIS.MvcFramework.Routing
 {
-    using System;
-    using System.Collections.Generic;
-
-    using SIS.Common;
-    using SIS.HTTP.Common;
-    using SIS.HTTP.Enums;
-    using SIS.HTTP.Requests;
-    using SIS.HTTP.Responses;
-
     public class ServerRoutingTable : IServerRoutingTable
     {
         private readonly Dictionary<HttpRequestMethod, Dictionary<string, Func<IHttpRequest, IHttpResponse>>> routingTable;
@@ -28,7 +27,7 @@
         {
             method.ThrowIfNull(nameof(method));
             path.ThrowIfNullOrEmpty(nameof(path));
-            func.ThrowIfNull(nameof(func));            
+            func.ThrowIfNull(nameof(func));
 
             this.routingTable[method].Add(path, func);
         }

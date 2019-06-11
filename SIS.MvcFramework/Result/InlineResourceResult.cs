@@ -1,8 +1,8 @@
-﻿namespace SIS.MvcFramework.Result
-{
-    using SIS.HTTP.Enums;
-    using SIS.HTTP.Headers;
+﻿using SIS.HTTP.Enums;
+using SIS.HTTP.Headers;
 
+namespace SIS.MvcFramework.Result
+{
     public class InlineResourceResult : ActionResult
     {
         public InlineResourceResult(byte[] content, HttpResponseStatusCode responseStatusCode)

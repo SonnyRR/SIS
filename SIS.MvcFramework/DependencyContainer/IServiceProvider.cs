@@ -1,7 +1,7 @@
-﻿namespace SIS.MvcFramework.DependencyContainer
-{
-    using System;
+﻿using System;
 
+namespace SIS.MvcFramework.DependencyContainer
+{
     public interface IServiceProvider
     {
         void Add<TSource, TDestination>()

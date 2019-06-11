@@ -1,11 +1,11 @@
-﻿namespace SIS.MvcFramework.DependencyContainer
-{
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
+namespace SIS.MvcFramework.DependencyContainer
+{
     public class ServiceProvider : IServiceProvider
     {
         private readonly IDictionary<Type, Type>
@@ -17,17 +17,17 @@
             this.dependencyContainer[typeof(TSource)] = typeof(TDestination);
         }
 
+        // CreateInstance(typeof(ILogger))
+        // CreateInstance(typeof(HomeController))
         public object CreateInstance(Type type)
         {
-            if (this.dependencyContainer.ContainsKey(type))
+            if (dependencyContainer.ContainsKey(type))
             {
-                type = this.dependencyContainer[type];
+                type = dependencyContainer[type];
             }
 
-            var constructor = type
-                .GetConstructors(BindingFlags.Public | BindingFlags.Instance)
-                .OrderBy(x => x.GetParameters().Count())
-                .FirstOrDefault();
+            var constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
+                .OrderBy(x => x.GetParameters().Count()).FirstOrDefault();
 
             if (constructor == null)
             {
@@ -36,10 +36,9 @@
 
             var parameters = constructor.GetParameters();
             var parameterInstances = new List<object>();
-
             foreach (var parameter in parameters)
             {
-                var parameterInstance = this.CreateInstance(parameter.ParameterType);
+                var parameterInstance = CreateInstance(parameter.ParameterType);
                 parameterInstances.Add(parameterInstance);
             }
 

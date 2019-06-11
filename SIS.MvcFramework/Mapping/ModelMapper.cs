@@ -2,119 +2,85 @@
 {
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
 
     public static class ModelMapper
     {
-        public static T ProjectTo<T>(object source)
+        private static void MapProperty(object originInstance, object destinationInstance,
+            PropertyInfo originProperty, PropertyInfo destinationProperty)
         {
-            if (source == null)
+            if (destinationProperty == null)
             {
-                throw new ArgumentNullException("source can not be null");
+                return;
             }
 
-            T dest = (T)Activator.CreateInstance(typeof(T));
+            if (originProperty.PropertyType.IsPrimitive
+                || originProperty.PropertyType == typeof(string)
+                || originProperty.PropertyType == typeof(decimal))
+            {
+                if (originProperty.PropertyType != typeof(string) && destinationProperty.PropertyType == typeof(string))
+                {
+                    destinationProperty.SetValue(destinationInstance, originProperty.GetValue(originInstance).ToString());
+                }
+                else if (originProperty.PropertyType != destinationProperty.PropertyType)
+                {
+                    destinationProperty.SetValue(destinationInstance,
+                        System.Convert.ChangeType(originProperty.GetValue(originInstance)
+                            , destinationProperty.PropertyType));
+                }
+                else if (originProperty.PropertyType == destinationProperty.PropertyType)
+                {
+                    destinationProperty.SetValue(destinationInstance, originProperty.GetValue(originInstance));
+                }
+            }
+            else if (typeof(IEnumerable).IsAssignableFrom(destinationProperty.PropertyType))
+            {
+                // TODO: Research if possible for other collections
+                
+                var originCollection = (IEnumerable) originProperty.GetValue(originInstance);
 
-            return DoMapping<T>(source, dest);
+                var destinationElementType = destinationProperty.GetValue(destinationInstance)
+                    .GetType()
+                    .GetGenericArguments()[0];
+
+                var destinationCollection = (IList) Activator.CreateInstance(destinationProperty.PropertyType);
+
+                foreach (var originElement in originCollection)
+                {
+                    destinationCollection.Add(MapObject(originElement, destinationElementType));
+                }
+
+                destinationProperty.SetValue(destinationInstance, destinationCollection);
+            }
+            else
+            {
+                var originValue = originProperty.GetValue(originInstance); // Complex Object
+                var destinationValue = MapObject(originValue, destinationProperty.PropertyType); // Recursive mapping
+
+                destinationProperty.SetValue(destinationInstance, destinationValue);
+            }
         }
 
-        private static T DoMapping<T>(object source, T dest)
+        private static object MapObject(object origin, Type destinationType)
         {
-            var properties = dest
-                .GetType()
-                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.CanWrite)
-                .ToArray();
+            var destinationInstance = Activator.CreateInstance(destinationType);
 
-            var srcProperties = source
-                .GetType()
-                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .ToArray();
-
-
-            foreach (var destProperty in properties)
+            foreach (var originProperty in origin.GetType().GetProperties())
             {
-                var srcProperty = srcProperties.
-                    Where(p => p.Name == destProperty.Name)
-                    .FirstOrDefault();
+                string propertyName = originProperty.Name;
+                PropertyInfo destinationProperty = destinationInstance.GetType().GetProperty(propertyName);
 
-                if (srcProperty == null)
-                {
-                    continue;
-                }
-
-                var sourceValue = srcProperty
-                    .GetMethod
-                    .Invoke(source, new object[0]);
-
-                if (sourceValue is null)
-                    continue;
-
-                if (ReflectionUtils.IsPrimitive(sourceValue.GetType()))
-                {
-                    if (destProperty.PropertyType == typeof(string))
-                    {
-                        destProperty.SetValue(dest, srcProperty.GetValue(source).ToString());
-                    }
-                    else
-                    {
-                        destProperty.SetValue(dest, srcProperty.GetValue(source));
-                    }
-
-                    continue;
-                }
-
-                if (ReflectionUtils.IsGenericCollection(sourceValue.GetType()))
-                {
-                    if (ReflectionUtils.IsPrimitive(sourceValue.GetType().GetGenericArguments()[0]))
-                    {
-                        var destinationCollection = sourceValue;
-                        destProperty.SetMethod.Invoke(dest, new[] { destinationCollection });
-                    }
-
-                    else
-                    {
-                        var destCollection = destProperty.GetMethod.Invoke(dest, new object[0]);
-                        var destType = destCollection.GetType().GetGenericArguments()[0];
-
-                        foreach (var destP in (IEnumerable)sourceValue)
-                        {
-                            var destInstance = Activator.CreateInstance(destType);
-                            ((IList)destCollection).Add(DoMapping(destP, destInstance));
-                        }
-                    }
-                }
-
-                else if (ReflectionUtils.IsNonGenericCollection(sourceValue.GetType()))
-                {
-                    var destCollection = (IList)Activator.CreateInstance(destProperty.PropertyType,
-                        new object[] { ((object[])sourceValue).Length });
-
-                    for (int i = 0; i < ((object[])sourceValue).Length; i++)
-                    {
-                        destCollection[i] = DoMapping(((object[])sourceValue)[i],
-                            destProperty.PropertyType.GetElementType());
-                    }
-
-                    destProperty.SetValue(dest, destCollection);
-                }
-
-                else
-                {
-                    // FIXME
-                    //var propertyInstance = Activator.CreateInstance(srcProperty.GetValue(source).GetType());
-
-                    var propertyType = destProperty.PropertyType;
-                    var name = propertyType.Name;
-
-                    var propertyInstance = Activator.CreateInstance(propertyType);
-
-                    destProperty.SetValue(dest, DoMapping(sourceValue, propertyInstance));
-                }
+                MapProperty(origin, destinationInstance, originProperty, destinationProperty);
             }
 
-            return dest;
+            return destinationInstance;
+        }
+
+        public static TDestination ProjectTo<TDestination>(object origin)
+        {
+            return (TDestination)MapObject(origin, typeof(TDestination));
         }
     }
 }

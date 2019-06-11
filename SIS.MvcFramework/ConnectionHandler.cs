@@ -1,24 +1,23 @@
-﻿namespace SIS.MvcFramework
+﻿using System;
+using System.IO;
+using System.Net.Sockets;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using SIS.Common;
+using SIS.HTTP.Common;
+using SIS.HTTP.Cookies;
+using SIS.HTTP.Enums;
+using SIS.HTTP.Exceptions;
+using SIS.HTTP.Requests;
+using SIS.HTTP.Responses;
+using SIS.HTTP.Sessions;
+using SIS.MvcFramework.Result;
+using SIS.MvcFramework.Routing;
+using SIS.MvcFramework.Sessions;
+
+namespace SIS.MvcFramework
 {
-    using System;
-    using System.IO;
-    using System.Net.Sockets;
-    using System.Reflection;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    using SIS.Common;
-    using SIS.HTTP.Common;
-    using SIS.HTTP.Cookies;
-    using SIS.HTTP.Enums;
-    using SIS.HTTP.Exceptions;
-    using SIS.HTTP.Requests;
-    using SIS.HTTP.Responses;
-    using SIS.HTTP.Sessions;
-    using SIS.MvcFramework.Result;
-    using SIS.MvcFramework.Routing;
-    using SIS.MvcFramework.Sessions;
-
     public class ConnectionHandler
     {
         private readonly Socket client;
@@ -27,13 +26,12 @@
 
         private readonly IHttpSessionStorage httpSessionStorage;
 
-        public ConnectionHandler(Socket client,
-            IServerRoutingTable serverRoutingTable,
-            IHttpSessionStorage httpSessionStorage)
+        public ConnectionHandler(Socket client, IServerRoutingTable serverRoutingTable, IHttpSessionStorage httpSessionStorage)
         {
             client.ThrowIfNull(nameof(client));
             serverRoutingTable.ThrowIfNull(nameof(serverRoutingTable));
-           
+            httpSessionStorage.ThrowIfNull(nameof(httpSessionStorage));
+
             this.client = client;
             this.serverRoutingTable = serverRoutingTable;
             this.httpSessionStorage = httpSessionStorage;
@@ -112,9 +110,9 @@
 
                 string sessionId = cookie.Value;
 
-                if (httpSessionStorage.ContainsSession(sessionId))
+                if (this.httpSessionStorage.ContainsSession(sessionId))
                 {
-                    httpRequest.Session = httpSessionStorage.GetSession(sessionId);
+                    httpRequest.Session = this.httpSessionStorage.GetSession(sessionId);
                 }
             }
 
@@ -122,7 +120,7 @@
             {
                 string sessionId = Guid.NewGuid().ToString();
 
-                httpRequest.Session = httpSessionStorage.GetSession(sessionId);
+                httpRequest.Session = this.httpSessionStorage.GetSession(sessionId);
             }
 
             return httpRequest.Session?.Id;
@@ -130,7 +128,7 @@
 
         private void SetResponseSession(IHttpResponse httpResponse, string sessionId)
         {
-            IHttpSession responseSession = httpSessionStorage.GetSession(sessionId);
+            IHttpSession responseSession = this.httpSessionStorage.GetSession(sessionId);
 
             if (responseSession.IsNew)
             {
@@ -139,12 +137,12 @@
             }
         }
 
-        private async Task PrepareResponse(IHttpResponse httpResponse)
+        private void PrepareResponse(IHttpResponse httpResponse)
         {
             // PREPARES RESPONSE -> MAPS IT TO BYTE DATA
             byte[] byteSegments = httpResponse.GetBytes();
 
-            await this.client.SendAsync(byteSegments, SocketFlags.None);
+            this.client.Send(byteSegments, SocketFlags.None);
         }
 
         public async Task ProcessRequestAsync()
@@ -156,7 +154,7 @@
 
                 if (httpRequest != null)
                 {
-                    Console.WriteLine($"Processing: {httpRequest.RequestMethod.ToString().ToUpper()} {httpRequest.Path}...");
+                    Console.WriteLine($"Processing: {httpRequest.RequestMethod} {httpRequest.Path}...");
 
                     string sessionId = this.SetRequestSession(httpRequest);
 
@@ -167,14 +165,13 @@
             }
             catch (BadRequestException e)
             {
-                httpResponse = new TextResult(e.Message.ToString(), HttpResponseStatusCode.BadRequest);
+                httpResponse = new TextResult(e.ToString(), HttpResponseStatusCode.BadRequest);
             }
             catch (Exception e)
             {
-                httpResponse = new TextResult(e.Message.ToString(), HttpResponseStatusCode.InternalServerError);
+                httpResponse = new TextResult(e.ToString(), HttpResponseStatusCode.InternalServerError);
             }
-
-            await this.PrepareResponse(httpResponse);
+            this.PrepareResponse(httpResponse);
 
             this.client.Shutdown(SocketShutdown.Both);
         }

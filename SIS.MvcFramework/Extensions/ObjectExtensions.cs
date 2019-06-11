@@ -1,11 +1,12 @@
-﻿namespace SIS.MvcFramework.Extensions
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Xml.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using SIS.MvcFramework.Mapping;
+
+namespace SIS.MvcFramework.Extensions
 {
-    using System.IO;
-    using System.Xml.Serialization;
-
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Serialization;
-
     public static class ObjectExtensions
     {
         public static string ToXml(this object obj)
@@ -15,7 +16,7 @@
                 var serializer = new XmlSerializer(obj.GetType());
                 serializer.Serialize(stringWriter, obj);
                 return stringWriter.ToString();
-            }
+            };
         }
 
         public static string ToJson(this object obj)
