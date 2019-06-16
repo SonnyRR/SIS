@@ -219,10 +219,10 @@ namespace AppViewCodeNamespace
                 {
                     var errors = compilationResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error);
                     var errorsHtml = new StringBuilder();
-                    errorsHtml.AppendLine($"<h1>{errors.Count()} errors:</h1>");
+                    errorsHtml.AppendLine($"<h1 class=\"text-danger\">{errors.Count()} errors:</h1>");
                     foreach (var error in errors)
                     {
-                        errorsHtml.AppendLine($"<div>{error.Location} => {error.GetMessage()}</div>");
+                        errorsHtml.AppendLine($"<div class=\"text-danger\">{error.Location} => {error.GetMessage()}</div class=\"text-danger\">");
                     }
 
                     errorsHtml.AppendLine($"<pre>{WebUtility.HtmlEncode(code)}</pre>");
