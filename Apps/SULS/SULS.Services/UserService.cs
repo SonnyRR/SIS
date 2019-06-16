@@ -1,48 +1,55 @@
-﻿using Panda.Data;
-using Panda.Data.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-
-namespace Panda.Services
+﻿namespace SULS.Services
 {
-    public class UsersService : IUsersService
-    {
-        private readonly PandaDbContext db;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Cryptography;
+    using System.Text;
 
-        public UsersService(PandaDbContext db)
+    using SULS.Data;
+    using SULS.Models;
+
+    public class UserService : IUserService
+    {
+        private readonly SULSContext context;
+
+        public UserService(SULSContext context)
         {
-            this.db = db;
+            this.context = context;
         }
 
         public string CreateUser(string username, string email, string password)
         {
-            // TODO: Check if user with the same username exists
             var user = new User
             {
                 Username = username,
                 Email = email,
                 Password = this.HashPassword(password),
             };
-            this.db.Users.Add(user);
-            this.db.SaveChanges();
+
+            this.context.Users.Add(user);
+            this.context.SaveChanges();
+
             return user.Id;
         }
 
         public IEnumerable<string> GetUsernames()
         {
-            var usernames = this.db.Users.Select(x => x.Username).ToList();
+            var usernames = this.context
+                .Users
+                .Select(x => x.Username)
+                .ToList();
+
             return usernames;
         }
 
         public User GetUserOrNull(string username, string password)
         {
             var passwordHash = this.HashPassword(password);
-            var user = this.db.Users.FirstOrDefault(
-                x => x.Username == username
-                && x.Password == passwordHash);
+
+            var user = this.context
+                .Users
+                .FirstOrDefault(x => x.Username == username && x.Password == passwordHash);
+
             return user;
         }
 

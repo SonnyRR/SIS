@@ -3,10 +3,7 @@ using Panda.Web.ViewModels.Receipts;
 using SIS.MvcFramework;
 using SIS.MvcFramework.Attributes.Security;
 using SIS.MvcFramework.Result;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Panda.Web.Controllers
 {
@@ -22,16 +19,17 @@ namespace Panda.Web.Controllers
         [Authorize]
         public IActionResult Index()
         {
-            var viewModel = this.receiptsService.GetAll().Select(
-                x => new ReceiptViewModel
+            var receipts = this.receiptsService.GetReceiptsForUser(this.User.Id)
+                .Select(r => new ReceiptsViewModel()
                 {
-                    Id = x.Id,
-                    Fee = x.Fee,
-                    IssuedOn = x.IssuedOn,
-                    RecipientName = x.Recipient.Username,
-                }).ToList();
+                    Id = r.Id,
+                    Fee = r.Fee,
+                    RecipientName = r.Recipient.Username,
+                    IssuedOn = r.IssuedOn.ToString()
+                })
+                .ToList();
 
-            return this.View(viewModel);
+            return this.View(receipts);
         }
     }
 }

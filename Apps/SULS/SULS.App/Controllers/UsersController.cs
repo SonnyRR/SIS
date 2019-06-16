@@ -1,15 +1,14 @@
-﻿using Panda.Services;
-using Panda.Web.ViewModels.Users;
-using SIS.MvcFramework;
-using SIS.MvcFramework.Attributes;
-using SIS.MvcFramework.Attributes.Security;
-using SIS.MvcFramework.Result;
-
-namespace Panda.Web.Controllers
+﻿namespace SULS.App.Controllers
 {
+    using SIS.MvcFramework;
+    using SIS.MvcFramework.Attributes;
+    using SIS.MvcFramework.Attributes.Security;
+    using SIS.MvcFramework.Result;
+    using SULS.App.ViewModels.Users;
+    using SULS.Services;
+
     public class UsersController : Controller
     {
-
         private readonly IUserService userService;
 
         public UsersController(IUserService userService)
@@ -23,25 +22,24 @@ namespace Panda.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(UserLoginInputModel model)
+        public IActionResult Login(UsersLoginInputModel inputModel)
         {
-
             if (!this.ModelState.IsValid)
-            {
-
-            }
-
-
-            var existingUser = this.userService.GetUserOrNull(model.Username, model.Password);
-
-            if (existingUser == null)
             {
                 return this.Redirect("/Users/Login");
             }
 
-            this.SignIn(existingUser.Id, existingUser.Username, existingUser.Email);
+            var user = this.userService
+                .GetUserOrNull(inputModel.Username, inputModel.Password);
 
-            return this.Redirect("/Home/Index");
+            if (user == null)
+            {
+                return this.Redirect("/Users/Login");
+            }
+
+            this.SignIn(user.Id, user.Username, user.Email);
+
+            return this.Redirect("/");
         }
 
         public IActionResult Register()
@@ -50,24 +48,22 @@ namespace Panda.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(UserRegisterInputModel model)
+        public IActionResult Register(UsersRegisterInputModel inputModel)
         {
-
             if (!this.ModelState.IsValid)
             {
                 return this.Redirect("/Users/Register");
             }
 
-            if (model.Password != model.ConfirmPassword)
+            if (inputModel.Password != inputModel.ConfirmPassword)
             {
                 return this.Redirect("/Users/Register");
             }
 
-            string userId = this.userService.CreateUser(model.Username, model.Email, model.Password);
-            this.SignIn(userId, model.Username, model.Email);
+            var userId = this.userService
+                .CreateUser(inputModel.Username, inputModel.Email, inputModel.Password);
 
-            return this.Redirect("/Home/Index");
-
+            return this.Redirect("/Users/Login");
         }
 
         [Authorize]
@@ -75,7 +71,7 @@ namespace Panda.Web.Controllers
         {
             this.SignOut();
 
-            return Redirect("/Home/Index");
+            return this.Redirect("/");
         }
     }
 }

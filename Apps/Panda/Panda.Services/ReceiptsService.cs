@@ -1,38 +1,38 @@
-﻿using Panda.Data;
-using Panda.Data.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Panda.Data;
+using Panda.Models;
 
 namespace Panda.Services
 {
     public class ReceiptsService : IReceiptsService
     {
-        private readonly PandaDbContext db;
+        private readonly PandaDbContext context;
 
-        public ReceiptsService(PandaDbContext db)
+        public ReceiptsService(PandaDbContext context)
         {
-            this.db = db;
+            this.context = context;
         }
 
-        public void CreateFromPackage(decimal weight, string packageId, string recipientId)
+        public void CreateReceipt(Package package)
         {
-            var receipt = new Receipt
+            var receipt = new Receipt()
             {
-                PackageId = packageId,
-                RecipientId = recipientId,
-                Fee = weight * 2.67M,
-                IssuedOn = DateTime.UtcNow,
+                Fee = package.Weight * 2.67M,
+                RecipientId = package.RecipientId,
+                PackageId = package.Id,
+                IssuedOn = DateTime.UtcNow
             };
 
-            this.db.Receipts.Add(receipt);
-            this.db.SaveChanges();
+            this.context.Add(receipt);
+            this.context.SaveChanges();
         }
 
-        public IQueryable<Receipt> GetAll()
+        public IQueryable<Receipt> GetReceiptsForUser(string userId)
         {
-            return this.db.Receipts;
+            var receipts = this.context.Receipts.Where(r => r.Recipient.Id == userId);
+            return receipts;
         }
     }
 }

@@ -1,14 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\..\SIS.MvcFramework\SIS.MvcFramework.csproj" />
-    <ProjectReference Include="..\Panda.Data\Panda.Data.csproj" />
-    <ProjectReference Include="..\Panda.Services\Panda.Services.csproj" />
+    <ProjectReference Include="..\SULS.Data\SULS.Data.csproj" />
+    <ProjectReference Include="..\SULS.Services\SULS.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,19 +22,13 @@
     <None Update="Resources\css\reset-css.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\css\style.css">
+    <None Update="Resources\css\site.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\favicon.ico">
+    <None Update="Resources\css\text.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\js\bootstrap.min.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\js\jquery-3.4.1.min.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\js\popper.min.js">
+    <None Update="Views\Error.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Views\Home\Index.html">
@@ -39,16 +37,13 @@
     <None Update="Views\Home\IndexLoggedIn.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Views\Packages\Create.html">
+    <None Update="Views\Problems\Create.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Views\Packages\Delivered.html">
+    <None Update="Views\Problems\Details.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Views\Packages\Pending.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Receipts\Index.html">
+    <None Update="Views\Submissions\Create.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Views\Users\Login.html">
@@ -60,6 +55,10 @@
     <None Update="Views\_Layout.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ViewModels\Home\" />
   </ItemGroup>
 
 </Project>

@@ -3,26 +3,24 @@ using Panda.Services;
 using SIS.MvcFramework;
 using SIS.MvcFramework.DependencyContainer;
 using SIS.MvcFramework.Routing;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Panda.Web
 {
     public class Startup : IMvcApplication
     {
+
         public void Configure(IServerRoutingTable serverRoutingTable)
         {
-            // Once on start
-            using (var db = new PandaDbContext())
+            using (var context = new PandaDbContext())
             {
-                db.Database.EnsureCreated();
+                context.Database.EnsureCreated();
             }
         }
 
         public void ConfigureServices(IServiceProvider serviceProvider)
         {
-            serviceProvider.Add<IUsersService, UsersService>();
-            serviceProvider.Add<IPackagesService, PackagesService>();
+            serviceProvider.Add<IUserService, UserService>();
+            serviceProvider.Add<IPackageService, PackageService>();
             serviceProvider.Add<IReceiptsService, ReceiptsService>();
         }
     }

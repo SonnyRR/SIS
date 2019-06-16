@@ -1,83 +1,85 @@
-﻿using Panda.Data.Models;
+﻿using Panda.Data.Enums;
 using Panda.Services;
 using Panda.Web.ViewModels.Packages;
 using SIS.MvcFramework;
 using SIS.MvcFramework.Attributes;
 using SIS.MvcFramework.Attributes.Security;
 using SIS.MvcFramework.Result;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Panda.Web.Controllers
 {
     public class PackagesController : Controller
     {
-        private readonly IPackagesService packagesService;
-        private readonly IUsersService usersService;
 
-        public PackagesController(IPackagesService packagesService, IUsersService usersService)
+        private readonly IPackageService packageService;
+        private readonly IUserService userService;
+
+        public PackagesController(IPackageService packageService, IUserService userService)
         {
-            this.packagesService = packagesService;
-            this.usersService = usersService;
+            this.packageService = packageService;
+            this.userService = userService;
         }
 
         [Authorize]
         public IActionResult Create()
         {
-            var list = this.usersService.GetUsernames();
-            return this.View(list);
+            var usernames = this.userService.GetUsernames();
+            return this.View(usernames);
         }
 
         [HttpPost]
         [Authorize]
-        public IActionResult Create(CreateInputModel input)
+        public IActionResult Create(PackageCreateInputModel model)
         {
             if (!this.ModelState.IsValid)
             {
                 return this.Redirect("/Packages/Create");
             }
 
-            this.packagesService.Create(input.Description, input.Weight, input.ShippingAddress, input.RecipientName);
+            this.packageService.Create(model.Description, model.Weight, model.ShippingAddress, model.RecipientName);
             return this.Redirect("/Packages/Pending");
-        }
-
-        [Authorize]
-        public IActionResult Delivered()
-        {
-            var packages = this.packagesService.GetAllByStatus(PackageStatus.Delivered)
-                .Select(x => new PackageViewModel
-                {
-                    Description = x.Description,
-                    Id = x.Id,
-                    Weight = x.Weight,
-                    ShippingAddress = x.ShippingAddress,
-                    RecipientName = x.Recipient.Username,
-                }).ToList();
-            return this.View(new PackagesListViewModel { Packages = packages });
         }
 
         [Authorize]
         public IActionResult Pending()
         {
-            var packages = this.packagesService.GetAllByStatus(PackageStatus.Pending)
-                .Select(x => new PackageViewModel
+            var packages = this.packageService.GetPackagesByStatus(PackageStatus.Pending)
+                .Select(pkg => new PendingPackagesViewModel()
                 {
-                    Description = x.Description,
-                    Id = x.Id,
-                    Weight = x.Weight,
-                    ShippingAddress = x.ShippingAddress,
-                    RecipientName = x.Recipient.Username,
-                }).ToList();
-            return this.View(new PackagesListViewModel { Packages = packages });
+                    Id = pkg.Id,
+                    Description = pkg.Description,
+                    Weight = pkg.Weight,
+                    ShippingAddress = pkg.ShippingAddress,
+                    RecipientName = pkg.Recipient.Username
+                })
+                .ToList();
+
+            return this.View(packages);
         }
 
         [Authorize]
         public IActionResult Deliver(string id)
         {
-            this.packagesService.Deliver(id);
+            this.packageService.DeliverPackage(id);
             return this.Redirect("/Packages/Delivered");
+        }
+
+        [Authorize]
+        public IActionResult Delivered()
+        {
+            var packages = this.packageService.GetPackagesByStatus(PackageStatus.Delivered)
+                .Select(pkg => new DeliveredPackagesViewModel()
+                {
+                   Description =pkg.Description,
+                   Weight=pkg.Weight,
+                   ShippingAddress=pkg.ShippingAddress,
+                   RecipientName = pkg.Recipient.Username,
+                   Status = pkg.PackageStatus.ToString(),
+                })
+                .ToList();
+
+            return this.View(packages);
         }
     }
 }

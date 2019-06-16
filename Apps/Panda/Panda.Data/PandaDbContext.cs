@@ -1,13 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Panda.Data.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Panda.Models;
 
 namespace Panda.Data
 {
     public class PandaDbContext : DbContext
     {
+
         public DbSet<User> Users { get; set; }
 
         public DbSet<Package> Packages { get; set; }
@@ -16,22 +14,18 @@ namespace Panda.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(DbSettings.ConnectionString);
-
             base.OnConfiguring(optionsBuilder);
+            optionsBuilder.UseSqlServer(DatabaseConfiguration.ConnectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>().HasMany(x => x.Packages)
-                .WithOne(x => x.Recipient).HasForeignKey(x => x.RecipientId)
+            modelBuilder.Entity<Receipt>()
+                .HasOne(r => r.Recipient)
+                .WithMany(u => u.Receipts)
+                .HasForeignKey(r => r.RecipientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<User>().HasMany(x => x.Receipts)
-                .WithOne(x => x.Recipient).HasForeignKey(x => x.RecipientId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            base.OnModelCreating(modelBuilder);
         }
     }
 }

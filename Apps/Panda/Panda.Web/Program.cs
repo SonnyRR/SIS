@@ -1,15 +1,11 @@
-﻿using SIS.MvcFramework;
-using System;
-using System.Globalization;
-using System.Threading;
-
-namespace Panda.Web
+﻿namespace Panda.Web
 {
-    public static class Program
+    using SIS.MvcFramework;
+
+    public class Program
     {
-        public static void Main()
+        public static void Main(string[] args)
         {
-            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             WebHost.Start(new Startup());
         }
     }
