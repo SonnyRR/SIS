@@ -16,7 +16,7 @@
         {
             base.OnConfiguring(optionsBuilder);
 
-            optionsBuilder.UseSqlServer(DatabaseConfiguration.ConnectionString);
+            optionsBuilder.UseSqlServer(DatabaseConfiguration.ConnectionStringMacOS);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
